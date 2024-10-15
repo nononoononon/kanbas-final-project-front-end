@@ -34,12 +34,6 @@ export default function DestructingImports() {
                     <td>Matematica.divide(8, 2) = {Matematica.divide(8, 2)}</td>
                     <td>divide(8, 2) = {divide(8, 2)}</td>
                 </tr>
-                <tr>
-                    <td>Math.subtract(5, 1) = {Math.subtract(5, 1)}</td>
-                    <td>Matematica.subtract(5, 1) =
-                        {Matematica.subtract(5, 1)}</td>
-                    <td>subtract(5, 1) = {subtract(5, 1)}</td>
-                </tr>
                 </tbody>
             </table>
             <hr/>
