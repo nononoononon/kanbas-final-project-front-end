@@ -2,14 +2,17 @@ import {BsBookHalf, BsGripVertical, BsPlus, BsSearch} from "react-icons/bs";
 import {IoAdd, IoEllipsisVertical} from "react-icons/io5";
 import React from "react";
 import LessonControlButtons from "./LessonControlButtons";
-
+import { useParams, Link } from "react-router-dom";
+import * as db from "../../Database";
 export default function Assignments() {
+    const { cid } = useParams();
+    const assignments = db.assignments.filter(assignment => assignment.course === cid);
     return (
         <div id="wd-assignments" className="p-3">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div className="input-group " style={{width: "300px"}}>
                     <span className="input-group-text bg-white border-end-0 fs-6 ">
-                        <BsSearch />
+                        <BsSearch/>
                     </span>
                     <input
                         id="wd-search-assignment"
@@ -22,10 +25,10 @@ export default function Assignments() {
                         id="wd-add-assignment-group"
                         className="btn btn-secondary me-2"
                     >
-                        <IoAdd className="fs-5" /> Group
+                        <IoAdd className="fs-5"/> Group
                     </button>
                     <button id="wd-add-assignment" className="btn btn-danger ">
-                        <IoAdd className="fs-5" /> Assignment
+                        <IoAdd className="fs-5"/> Assignment
                     </button>
                 </div>
             </div>
@@ -47,63 +50,30 @@ export default function Assignments() {
             </h5>
 
             <ul id="wd-assignment-list" className="list-group rounded-0">
-                <li className="list-group-item p-3 d-flex align-items-center wd-lesson">
-                    <a href="#/Kanbas/Courses/1234/Assignments/123" className="w-100 d-flex align-items-center text-decoration-none">
-                        <BsGripVertical className="fs-1 me-2 text-muted text-black"/>
-                        <BsBookHalf className="fs-1 me-3 text-success"/>
-                        <div className="w-100 d-flex justify-content-between align-items-center">
-                            <div>
-                                <span className="fs-5 fw-bold text-black">A1</span>
-                                <div className="assignment-title text-muted">
-                                    <span className="text-danger">Assignment 1</span> |
-                                    <strong>Not available at</strong> May 6 at 12:00 pm <br/>
-                                    <strong>Due</strong> : September 25 at 11:59pm | 100 pt
+                {assignments.map((assignment) => (
+                    <li key={assignment._id} className="list-group-item p-3 d-flex align-items-center wd-lesson">
+                        <Link
+                            to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
+                            className="w-100 d-flex align-items-center text-decoration-none"
+                        >
+                            <BsGripVertical className="fs-1 me-2 text-muted text-black"/>
+                            <BsBookHalf className="fs-1 me-3 text-success"/>
+                            <div className="w-100 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span className="fs-5 fw-bold text-black">{assignment._id}</span>
+                                    <div className="assignment-title text-muted">
+                                        <span className="text-danger">{assignment.title}</span> |
+                                        <strong>Not available at</strong> {assignment.notAvailableAt} <br/>
+                                        <strong>Due</strong> : {assignment.dueDate} | {assignment.points} pt
+                                    </div>
+                                </div>
+                                <div className="text-muted text-black">
+                                    <LessonControlButtons/>
                                 </div>
                             </div>
-                            <div className="text-muted text-black">
-                            <LessonControlButtons />
-                            </div>
-                        </div>
-                    </a>
-                </li>
-                <li className="list-group-item p-3 d-flex align-items-center wd-lesson">
-                    <a href="#/Kanbas/Courses/1234/Assignments/124" className="w-100 d-flex align-items-center text-decoration-none">
-                        <BsGripVertical className="fs-1 me-2 text-muted text-black"/>
-                        <BsBookHalf className="fs-1 me-3 text-success"/>
-                        <div className="w-100 d-flex justify-content-between align-items-center">
-                            <div>
-                                <span className="fs-5 fw-bold text-black">A2</span>
-                                <div className="assignment-title text-muted">
-                                    <span className="text-danger">Assignment 2</span> |
-                                    <strong>Not available at</strong> May 8 at 12:00 pm <br/>
-                                    <strong>Due</strong> : September 28 at 11:59pm | 100 pt
-                                </div>
-                            </div>
-                            <div className="text-muted text-black">
-                                <LessonControlButtons/>
-                            </div>
-                        </div>
-                    </a>
-                </li>
-                <li className="list-group-item p-3 d-flex align-items-center wd-lesson">
-                    <a href="#/Kanbas/Courses/1234/Assignments/125" className="w-100 d-flex align-items-center text-decoration-none">
-                        <BsGripVertical className="fs-1 me-2 text-muted text-black"/>
-                        <BsBookHalf className="fs-1 me-3 text-success"/>
-                        <div className="w-100 d-flex justify-content-between align-items-center">
-                            <div>
-                                <span className="fs-5 fw-bold text-black">A3</span>
-                                <div className="assignment-title text-muted">
-                                    <span className="text-danger">Assignment 3</span> |
-                                    <strong>Not available at</strong> May 10 at 12:00 pm <br/>
-                                    <strong>Due</strong> : October 25 at 11:59pm | 20 pt
-                                </div>
-                            </div>
-                            <div className="text-muted text-black">
-                                <LessonControlButtons/>
-                            </div>
-                        </div>
-                    </a>
-                </li>
+                        </Link>
+                    </li>
+                ))}
             </ul>
         </div>
     );

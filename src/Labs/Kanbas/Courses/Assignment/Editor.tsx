@@ -1,4 +1,14 @@
+import { useParams, Link } from "react-router-dom";
+import * as db from "../../Database";
+
 export default function AssignmentEditor() {
+    const { cid, aid } = useParams();
+    const assignment = db.assignments.find(assignment => assignment._id === aid);
+
+    if (!assignment) {
+        return <div>Assignment not found</div>;
+    }
+
     return (
         <div id="wd-assignments-editor" className="container mt-5">
             <h2 className="mb-4">Assignment Editor</h2>
@@ -6,14 +16,14 @@ export default function AssignmentEditor() {
             {/* Assignment Name */}
             <div className="mb-4">
                 <label htmlFor="wd-name" className="form-label">Assignment Name</label>
-                <input id="wd-name" value="A1 - ENV + HTML" className="form-control"/>
+                <input id="wd-name" value={assignment.title} className="form-control" readOnly />
             </div>
 
             {/* Assignment Description */}
             <div className="mb-4">
                 <label htmlFor="wd-description" className="form-label">Description</label>
                 <textarea id="wd-description" rows={5} className="form-control">
-                    The assignment is available online Submit a link to the landing page of
+                    {assignment.description}
                 </textarea>
             </div>
 
@@ -21,7 +31,7 @@ export default function AssignmentEditor() {
             <div className="row mb-4">
                 <div className="col-md-6">
                     <label htmlFor="wd-points" className="form-label">Points</label>
-                    <input id="wd-points" value={100} className="form-control"/>
+                    <input id="wd-points" value={assignment.points} className="form-control" readOnly />
                 </div>
                 <div className="col-md-6">
                     <label htmlFor="wd-group" className="form-label">Assignment Group</label>
@@ -41,7 +51,6 @@ export default function AssignmentEditor() {
                         <option value="complete/incomplete">Complete/Incomplete</option>
                     </select>
                 </div>
-
             </div>
 
             {/* Online Entry Options */}
@@ -78,31 +87,34 @@ export default function AssignmentEditor() {
 
             {/* Assign To, Due Date, Availability */}
             <div className="mb-4 border rounded-1 p-3">
-            <div className="mb-4">
-                <label htmlFor="wd-assign-to" className="form-label">Assign To</label>
-                <input type="text" id="wd-assign-to" value="Everyone" className="form-select"/>
-            </div>
+                <div className="mb-4">
+                    <label htmlFor="wd-assign-to" className="form-label">Assign To</label>
+                    <select id="wd-assign-to" className="form-select">
+                        <option value="everyone">Everyone</option>
+                        <option value="specific-groups">Specific Groups</option>
+                    </select>
+                </div>
 
-            <div className="row mb-4">
-                <div className="col-md-6">
-                    <label htmlFor="wd-due-date" className="form-label">Due Date</label>
-                    <input type="date" id="wd-due-date" value="2024-05-13" className="form-control"/>
+                <div className="row mb-4">
+                    <div className="col-md-6">
+                        <label htmlFor="wd-due-date" className="form-label">Due Date</label>
+                        <input type="date" id="wd-due-date" value={assignment.dueDate} className="form-control" />
+                    </div>
+                    <div className="col-md-3">
+                        <label htmlFor="wd-available-from" className="form-label">Available from</label>
+                        <input type="date" id="wd-available-from" value={assignment.availableDate} className="form-control"/>
+                    </div>
+                    <div className="col-md-3">
+                        <label htmlFor="wd-available-until" className="form-label">Until</label>
+                        <input type="date" id="wd-available-until" value={assignment.notAvailableAt} className="form-control"/>
+                    </div>
                 </div>
-                <div className="col-md-3">
-                    <label htmlFor="wd-available-from" className="form-label">Available from</label>
-                    <input type="date" id="wd-available-from" value="2024-05-06" className="form-control"/>
-                </div>
-                <div className="col-md-3">
-                    <label htmlFor="wd-available-until" className="form-label">Until</label>
-                    <input type="date" id="wd-available-until" value="2024-05-20" className="form-control"/>
-                </div>
-            </div>
             </div>
 
             {/* Save/Cancel Buttons */}
             <div className="d-flex justify-content-end">
-                <button className="btn btn-secondary me-2">Cancel</button>
-                <button className="btn btn-danger">Save</button>
+                <Link to={`/Kanbas/Courses/${cid}/Assignments`} className="btn btn-secondary me-2">Cancel</Link>
+                <Link to={`/Kanbas/Courses/${cid}/Assignments`} className="btn btn-danger">Save</Link>
             </div>
         </div>
     );
