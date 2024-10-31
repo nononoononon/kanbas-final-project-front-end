@@ -1,37 +1,111 @@
 import {BsBookHalf, BsGripVertical, BsPlus, BsSearch} from "react-icons/bs";
 import {IoAdd, IoEllipsisVertical} from "react-icons/io5";
-import React from "react";
+import React, {useState} from "react";
 import LessonControlButtons from "./LessonControlButtons";
-import { useParams, Link } from "react-router-dom";
+import {useParams, Link, useNavigate, Route} from "react-router-dom";
 import * as db from "../../Database";
+import AssignmentController from "./AssignmentController"
+import { useSelector, useDispatch } from "react-redux";
+import {Button, Modal} from "react-bootstrap";
+import AssignmentEditorUpdate from "./Editor";
+type Assignment = {
+    _id: string;
+    title: string;
+    description: string;
+    points: number;
+    dueDate: string;
+    availableDate: string;
+    notAvailableAt: string;
+};
+
+
 export default function Assignments() {
-    const { cid } = useParams();
-    const assignments = db.assignments.filter(assignment => assignment.course === cid);
+    const { cid, aid } = useParams();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    //const assignments = db.assignments.filter(assignment => assignment.course === cid);
+    const [assignments, setAssignments] = useState<Assignment[]>(db.assignments);
+    const [newAssignment, setNewAssignment] = useState<Assignment>({
+        _id: "",
+        title: "",
+        description: "",
+        points: 0,
+        dueDate: "",
+        availableDate: "",
+        notAvailableAt: "",
+    });
+    // add assignment
+    const addAssignment = () => {
+        setAssignments([
+            ...assignments,
+            { ...newAssignment, _id: new Date().getTime().toString() }  // 为新 assignment 生成唯一 _id
+        ]);
+        setNewAssignment({
+            _id: "",
+            title: "",
+            description: "",
+            points: 0,
+            dueDate: "",
+            availableDate: "",
+            notAvailableAt: "",
+        });
+    };
+    const [showModal, setShowModal] = useState(false);
+    const [assignmentToDelete, setAssignmentToDelete] = useState<Assignment | null>(null);
+
+    const showDeleteConfirmation = (assignment: Assignment) => {
+        setAssignmentToDelete(assignment);
+        setShowModal(true);
+    };
+
+    const confirmDeleteAssignment = () => {
+        if (assignmentToDelete) {
+            setAssignments(assignments.filter((assignment) => assignment._id !== assignmentToDelete._id));
+        }
+        setShowModal(false);
+        setAssignmentToDelete(null);
+    };
+
+    const updateAssignment = (updatedAssignment : Assignment) => {
+        setAssignments((prevAssignments) =>
+            prevAssignments.map((assignment) =>
+                assignment._id === updatedAssignment._id ? updatedAssignment : assignment
+            )
+        );
+    };
+
+    if (aid) {
+        return (
+            <AssignmentEditorUpdate
+                assignments={assignments}
+                updateAssignment={updateAssignment}
+            />
+        );
+    }
     return (
         <div id="wd-assignments" className="p-3">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <div className="input-group " style={{width: "300px"}}>
-                    <span className="input-group-text bg-white border-end-0 fs-6 ">
-                        <BsSearch/>
-                    </span>
-                    <input
-                        id="wd-search-assignment"
-                        className="form-control border-start-0"
-                        placeholder="Search for Assignments"
-                    />
-                </div>
-                <div>
-                    <button
-                        id="wd-add-assignment-group"
-                        className="btn btn-secondary me-2"
-                    >
-                        <IoAdd className="fs-5"/> Group
-                    </button>
-                    <button id="wd-add-assignment" className="btn btn-danger ">
-                        <IoAdd className="fs-5"/> Assignment
-                    </button>
-                </div>
-            </div>
+            <AssignmentController
+                dialogTitle={ "Add New Assignment"}
+                assignment={newAssignment}
+                setAssignment={setNewAssignment}
+                addAssignment={addAssignment}
+            />
+            {/* confirmation of delete */}
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure to remove the assignment？</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={confirmDeleteAssignment}>
+                        ok
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
 
             <h5 id="wd-assignments-title"
                 className="d-flex justify-content-between align-items-center bg-secondary p-3 mb-0">
@@ -67,11 +141,14 @@ export default function Assignments() {
                                         <strong>Due</strong> : {assignment.dueDate} | {assignment.points} pt
                                     </div>
                                 </div>
-                                <div className="text-muted text-black">
-                                    <LessonControlButtons/>
-                                </div>
                             </div>
                         </Link>
+                        <div className="text-muted ms-auto ">
+                            <LessonControlButtons
+                                assignmentId={assignment._id}
+                                deleteAssignment={() => showDeleteConfirmation(assignment)}
+                            />
+                        </div>
                     </li>
                 ))}
             </ul>

@@ -1,10 +1,13 @@
 import Modules from "./Modules";
 import Home from "./Home";
 import Assignment from "./Assignment";
-import AssignmentEditor from "./Assignment/Editor";
+import AssignmentEditorUpdate from "./Assignment/Editor";
 import { Navigate, Route, Routes, Link, useLocation, useParams } from "react-router-dom";
 import { FaAlignJustify } from "react-icons/fa";
 import PeopleTable from "./People/Table";
+import {useState} from "react";
+import * as db from '../Database';
+
 
 export default function  Courses({ courses }: { courses: any[]; }) {
     const { cid } = useParams();
@@ -12,6 +15,35 @@ export default function  Courses({ courses }: { courses: any[]; }) {
     const course = courses.find((course) => course._id === cid);
     const links = ["Home", "Modules", "Piazza", "Zoom", "Assignments", "Quizzes", "Grades", "People"];
 
+    const [assignments, setAssignments] = useState<Assignment[]>(db.assignments);
+
+    const updateAssignment = (updatedAssignment: Assignment) => {
+        setAssignments((prevAssignments) =>
+            prevAssignments.map((assignment) =>
+                assignment._id === updatedAssignment._id ? updatedAssignment : assignment
+            )
+        );
+    };
+
+    const addAssignment = (newAssignment: Assignment) => {
+        setAssignments((prevAssignments) => [
+            ...prevAssignments,
+            newAssignment,
+        ]);
+    };
+    type Assignment = {
+        _id: string;
+        title: string;
+        description: string;
+        points: number;
+        dueDate: string;
+        availableDate: string;
+        notAvailableAt: string;
+    };
+    type AssignmentsProps = {
+        assignments: Assignment[];
+        updateAssignment: (updatedAssignment: Assignment) => void;
+    };
     return (
         <div id="wd-courses">
             <h2 className="text-danger">
@@ -39,7 +71,15 @@ export default function  Courses({ courses }: { courses: any[]; }) {
                         <Route path="Home" element={<Home />} />
                         <Route path="Modules" element={<Modules />} />
                         <Route path="Assignments" element={<Assignment />} />
-                        <Route path="Assignments/:aid" element={<AssignmentEditor />} />
+                        <Route
+                            path="Assignments/:aid"
+                            element={
+                                <AssignmentEditorUpdate
+                                    assignments={assignments}
+                                    updateAssignment={updateAssignment}
+                                />
+                            }
+                        />
                         <Route path="People" element={<PeopleTable />} />
                     </Routes>
                 </div>

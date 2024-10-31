@@ -3,7 +3,6 @@ import VariableTypes from "./VariableTypes";
 import Add from "./Add";
 import Square from "./Square";
 import Highlight from "./Highlight";
-import AddPathParameters from "./AddPathParameters";
 import PathParameters from "./PathParameters";
 import IfElse from "./IfElse";
 import BooleanVariables from "./BooleanVariables";
