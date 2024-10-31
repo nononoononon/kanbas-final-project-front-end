@@ -22,17 +22,17 @@ export default function AssignmentEditor({
     addAssignment: () => void;
 }) {
     return (
-        <div id="wd-assignment-editor-dialog" className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div id="wd-assignment-editor-dialog" className="modal fade  " data-bs-backdrop="static" data-bs-keyboard="false">
             <div className="modal-dialog modal-lg">
-                <div className="modal-content">
+                <div className="modal-content ">
                     <div className="modal-header">
                         <h1 className="modal-title fs-5">{dialogTitle}</h1>
                         <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <div className="modal-body">
+                    <div className="modal-body ">
                         {/* Assignment Name */}
-                        <div className="mb-4">
+                        <div className="row mb-4  border mb-3  p-3">
                             <label htmlFor="wd-name" className="form-label">Assignment Name</label>
                             <input
                                 id="wd-name"
@@ -43,7 +43,7 @@ export default function AssignmentEditor({
                         </div>
 
                         {/* Assignment Description */}
-                        <div className="mb-4">
+                        <div className="row mb-4  border mb-3  p-3">
                             <label htmlFor="wd-description" className="form-label">Description</label>
                             <textarea
                                 id="wd-description"
@@ -55,7 +55,7 @@ export default function AssignmentEditor({
                         </div>
 
                         {/* Points */}
-                        <div className="mb-4">
+                        <div className="row mb-4  border mb-3  p-3">
                             <label htmlFor="wd-points" className="form-label">Points</label>
                             <input
                                 id="wd-points"
@@ -67,42 +67,42 @@ export default function AssignmentEditor({
                         </div>
 
                         {/* Due Date and Availability Dates */}
-                        <div className="row mb-4">
-                            <div className="col-md-4">
+                        <div className="row mb-4 border rounded-1 p-2">
+                            <div className="col-md-12 mb-3">
                                 <label htmlFor="wd-due-date" className="form-label">Due Date</label>
                                 <input
                                     type="date"
                                     id="wd-due-date"
                                     value={assignment.dueDate}
                                     className="form-control"
-                                    onChange={(e) => setAssignment({ ...assignment, dueDate: e.target.value })}
+                                    onChange={(e) => setAssignment({...assignment, dueDate: e.target.value})}
                                 />
                             </div>
-                            <div className="col-md-4">
+                            <div className="col-md-6 mb-3">
                                 <label htmlFor="wd-available-from" className="form-label">Available from</label>
                                 <input
                                     type="date"
                                     id="wd-available-from"
                                     value={assignment.availableDate}
                                     className="form-control"
-                                    onChange={(e) => setAssignment({ ...assignment, availableDate: e.target.value })}
+                                    onChange={(e) => setAssignment({...assignment, availableDate: e.target.value})}
                                 />
                             </div>
-                            <div className="col-md-4">
+                            <div className="col-md-6 mb-3">
                                 <label htmlFor="wd-not-available-at" className="form-label">Available Until</label>
                                 <input
                                     type="date"
                                     id="wd-not-available-at"
                                     value={assignment.notAvailableAt}
                                     className="form-control"
-                                    onChange={(e) => setAssignment({ ...assignment, notAvailableAt: e.target.value })}
+                                    onChange={(e) => setAssignment({...assignment, notAvailableAt: e.target.value})}
                                 />
                             </div>
                         </div>
                     </div>
 
                     <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                             Cancel
                         </button>
                         {/* Call addAssignment directly to save and close modal */}

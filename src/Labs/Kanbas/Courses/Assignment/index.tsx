@@ -8,6 +8,8 @@ import AssignmentController from "./AssignmentController"
 import { useSelector, useDispatch } from "react-redux";
 import {Button, Modal} from "react-bootstrap";
 import AssignmentEditorUpdate from "./Editor";
+import {addAssignment, deleteAssignment} from "./reducer";
+
 type Assignment = {
     _id: string;
     title: string;
@@ -22,9 +24,10 @@ type Assignment = {
 export default function Assignments() {
     const { cid, aid } = useParams();
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-    //const assignments = db.assignments.filter(assignment => assignment.course === cid);
-    const [assignments, setAssignments] = useState<Assignment[]>(db.assignments);
+    const assignments = useSelector(
+        (state: any) => state.assignmentsReducer.assignments
+    );
+
     const [newAssignment, setNewAssignment] = useState<Assignment>({
         _id: "",
         title: "",
@@ -34,12 +37,9 @@ export default function Assignments() {
         availableDate: "",
         notAvailableAt: "",
     });
-    // add assignment
-    const addAssignment = () => {
-        setAssignments([
-            ...assignments,
-            { ...newAssignment, _id: new Date().getTime().toString() }  // 为新 assignment 生成唯一 _id
-        ]);
+
+    const handleAddAssignment = () => {
+        dispatch(addAssignment(newAssignment));
         setNewAssignment({
             _id: "",
             title: "",
@@ -50,6 +50,7 @@ export default function Assignments() {
             notAvailableAt: "",
         });
     };
+
     const [showModal, setShowModal] = useState(false);
     const [assignmentToDelete, setAssignmentToDelete] = useState<Assignment | null>(null);
 
@@ -60,36 +61,24 @@ export default function Assignments() {
 
     const confirmDeleteAssignment = () => {
         if (assignmentToDelete) {
-            setAssignments(assignments.filter((assignment) => assignment._id !== assignmentToDelete._id));
+            dispatch(deleteAssignment(assignmentToDelete._id));
         }
         setShowModal(false);
         setAssignmentToDelete(null);
     };
 
-    const updateAssignment = (updatedAssignment : Assignment) => {
-        setAssignments((prevAssignments) =>
-            prevAssignments.map((assignment) =>
-                assignment._id === updatedAssignment._id ? updatedAssignment : assignment
-            )
-        );
-    };
 
-    if (aid) {
-        return (
-            <AssignmentEditorUpdate
-                assignments={assignments}
-                updateAssignment={updateAssignment}
-            />
-        );
-    }
+
+
     return (
         <div id="wd-assignments" className="p-3">
             <AssignmentController
-                dialogTitle={ "Add New Assignment"}
+                dialogTitle={"Add New Assignment"}
                 assignment={newAssignment}
                 setAssignment={setNewAssignment}
-                addAssignment={addAssignment}
+                addAssignment={handleAddAssignment}
             />
+
             {/* confirmation of delete */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
@@ -124,7 +113,7 @@ export default function Assignments() {
             </h5>
 
             <ul id="wd-assignment-list" className="list-group rounded-0">
-                {assignments.map((assignment) => (
+                {assignments.map((assignment: Assignment) => (
                     <li key={assignment._id} className="list-group-item p-3 d-flex align-items-center wd-lesson">
                         <Link
                             to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
