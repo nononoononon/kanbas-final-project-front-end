@@ -5,22 +5,17 @@ import Account from "./Account";
 import Dashboard from "./Dashboard";
 import Courses from "./Courses";
 import KanbasNavigation from "./Navigation";
-import * as db from "./Database";
-import { useState } from "react";
+import * as client from "./Courses/client";
+import {useEffect, useState} from "react";
 import ProtectedRoute from "./Account/ProtectedRoute";
 export default function Kanbas() {
-    const [courses, setCourses] = useState<any[]>(db.courses);
+    const [courses, setCourses] = useState<any[]>([]);
     const [course, setCourse] = useState<any>({
         _id: "1234", name: "New Course", number: "New Number",
         startDate: "2023-09-10", endDate: "2023-12-15", description: "New Description",
     });
-    const addNewCourse = () => {
-        setCourses([...courses, { ...course, _id: new Date().getTime().toString() }]);
-    };
-    const deleteCourse = (courseId: any) => {
-        setCourses(courses.filter((course) => course._id !== courseId));
-    };
-    const updateCourse = () => {
+    const updateCourse = async () => {
+        await client.updateCourse(course);
         setCourses(
             courses.map((c) => {
                 if (c._id === course._id) {
@@ -31,6 +26,28 @@ export default function Kanbas() {
             })
         );
     };
+
+    const deleteCourse = async (courseId: string) => {
+        await client.deleteCourse(courseId);
+        setCourses(courses.filter(
+            (c) => c._id !== courseId));
+    };
+
+    const addNewCourse = async () => {
+        const newCourse = await client.createCourse(course);
+        setCourses([ ...courses, newCourse ]);
+    };
+
+    const fetchCourses = async () => {
+        const courses = await client.fetchAllCourses();
+        setCourses(courses);
+    };
+
+    useEffect(() => {
+        fetchCourses();
+    }, []);
+
+
 
     return (
         <div id="wd-kanbas">

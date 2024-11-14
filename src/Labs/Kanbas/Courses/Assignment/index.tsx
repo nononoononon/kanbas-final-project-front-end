@@ -1,6 +1,6 @@
 import {BsBookHalf, BsGripVertical, BsPlus, BsSearch} from "react-icons/bs";
 import {IoAdd, IoEllipsisVertical} from "react-icons/io5";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import LessonControlButtons from "./LessonControlButtons";
 import {useParams, Link, useNavigate, Route} from "react-router-dom";
 import * as db from "../../Database";
@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {Button, Modal} from "react-bootstrap";
 import AssignmentEditorUpdate from "./Editor";
 import {addAssignment, deleteAssignment} from "./reducer";
+import {createAssignment, findAssignmentsForCourse} from "./client";
 
 type Assignment = {
     _id: string;
@@ -18,18 +19,15 @@ type Assignment = {
     dueDate: string;
     availableDate: string;
     notAvailableAt: string;
+    course?: string;
 };
 
 
 export default function Assignments() {
-    const { cid, aid } = useParams();
-    const dispatch = useDispatch();
-    const assignments = useSelector(
-        (state: any) => state.assignmentsReducer.assignments
-    );
-
+    const { cid } = useParams<{ cid: string }>();
+    const [assignments, setAssignments] = useState<Assignment[]>([]);
     const [newAssignment, setNewAssignment] = useState<Assignment>({
-        _id: "",
+        _id: `${Date.now()}`,
         title: "",
         description: "",
         points: 0,
@@ -38,37 +36,62 @@ export default function Assignments() {
         notAvailableAt: "",
     });
 
-    const handleAddAssignment = () => {
-        dispatch(addAssignment(newAssignment));
-        setNewAssignment({
-            _id: "",
-            title: "",
-            description: "",
-            points: 0,
-            dueDate: "",
-            availableDate: "",
-            notAvailableAt: "",
-        });
-    };
-
     const [showModal, setShowModal] = useState(false);
     const [assignmentToDelete, setAssignmentToDelete] = useState<Assignment | null>(null);
+
+    useEffect(() => {
+        if (cid) {
+            loadAssignments(cid);
+        }
+    }, [cid]);
+
+    const loadAssignments = async (courseId: string) => {
+        try {
+            const data = await findAssignmentsForCourse(courseId);
+            setAssignments(data);
+        } catch (error) {
+            console.error("Error fetching assignments:", error);
+        }
+    };
+
+    const handleAddAssignment = async () => {
+        if (cid) {
+            try {
+                const assignmentToCreate = { ...newAssignment, _id: `${Date.now()}` };
+                const createdAssignment = await createAssignment(cid, assignmentToCreate);
+                setAssignments([...assignments, createdAssignment]);
+                setNewAssignment({
+                    _id: `${Date.now()}`,
+                    title: "",
+                    description: "",
+                    points: 0,
+                    dueDate: "",
+                    availableDate: "",
+                    notAvailableAt: "",
+                });
+            } catch (error) {
+                console.error("Error creating assignment:", error);
+            }
+        }
+    };
 
     const showDeleteConfirmation = (assignment: Assignment) => {
         setAssignmentToDelete(assignment);
         setShowModal(true);
     };
 
-    const confirmDeleteAssignment = () => {
-        if (assignmentToDelete) {
-            dispatch(deleteAssignment(assignmentToDelete._id));
+    const confirmDeleteAssignment = async () => {
+        if (assignmentToDelete && assignmentToDelete._id) {
+            try {
+                await deleteAssignment(assignmentToDelete._id);
+                setAssignments(assignments.filter((a) => a._id !== assignmentToDelete._id));
+                setShowModal(false);
+                setAssignmentToDelete(null);
+            } catch (error) {
+                console.error("Error deleting assignment:", error);
+            }
         }
-        setShowModal(false);
-        setAssignmentToDelete(null);
     };
-
-
-
 
     return (
         <div id="wd-assignments" className="p-3">
@@ -134,7 +157,7 @@ export default function Assignments() {
                         </Link>
                         <div className="text-muted ms-auto ">
                             <LessonControlButtons
-                                assignmentId={assignment._id}
+                                assignmentId={assignment._id || ""}
                                 deleteAssignment={() => showDeleteConfirmation(assignment)}
                             />
                         </div>

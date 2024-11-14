@@ -1,8 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import React, { useState } from "react";
-import * as db from "../../Database";
-import {updateAssignment} from "./reducer";
-import {useDispatch, useSelector} from "react-redux";
+import React, { useState, useEffect } from "react";
+import { findAssignmentById, updateAssignment } from "./client";
+import { useDispatch } from "react-redux";
 
 type Assignment = {
     _id: string;
@@ -12,49 +11,57 @@ type Assignment = {
     dueDate: string;
     availableDate: string;
     notAvailableAt: string;
+    course?: string;
 };
+
 export default function AssignmentEditorUpdate() {
-    const { cid, aid } = useParams();
+    const { cid, aid } = useParams<{ cid: string; aid: string }>();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const assignments = useSelector(
-        (state: any) => state.assignmentsReducer.assignments
-    );
 
-    const initialAssignment = assignments.find(
-        (assignment: Assignment) => assignment._id === aid
-    );
+    const [editedAssignment, setEditedAssignment] = useState<Assignment | null>(null);
 
-    const [editedAssignment, setEditedAssignment] = useState<Assignment>(
-        initialAssignment || {
-            _id: "",
-            title: "",
-            description: "",
-            points: 0,
-            dueDate: "",
-            availableDate: "",
-            notAvailableAt: "",
-        }
-    );
+    useEffect(() => {
+        const loadAssignment = async () => {
+            if (cid && aid) {
+                try {
+                    const assignment = await findAssignmentById(cid, aid);
+                    setEditedAssignment(assignment);
+                } catch (error) {
+                    console.error("Error fetching assignment:", error);
+                    setEditedAssignment(null);
+                }
+            }
+        };
+        loadAssignment();
+    }, [cid, aid]);
 
     const handleInputChange = (field: string, value: string | number) => {
-        setEditedAssignment({ ...editedAssignment, [field]: value });
+        if (editedAssignment) {
+            setEditedAssignment({ ...editedAssignment, [field]: value });
+        }
     };
 
-    const confirmSaveEdit = () => {
-        dispatch(updateAssignment(editedAssignment));
-        navigate(`/Kanbas/Courses/${cid}/Assignments`);
+    const confirmSaveEdit = async () => {
+        if (editedAssignment) {
+            try {
+                await updateAssignment(editedAssignment);
+                navigate(`/Kanbas/Courses/${cid}/Assignments`);
+            } catch (error) {
+                console.error("Error updating assignment:", error);
+            }
+        }
     };
 
-    if (!initialAssignment) {
+    if (!editedAssignment) {
         return <div>Assignment not found</div>;
     }
 
     return (
-        <div id="wd-assignments-editor" className="container  mt-5">
+        <div id="wd-assignments-editor" className="container mt-5">
             <h2 className="mb-4">Assignment Editor</h2>
 
-            <div className="row mb-4  border mb-3  p-3">
+            <div className="row mb-4 border mb-3 p-3">
                 <label htmlFor="wd-name" className="form-label">Assignment Name</label>
                 <input
                     id="wd-name"
@@ -63,7 +70,7 @@ export default function AssignmentEditorUpdate() {
                     onChange={(e) => handleInputChange("title", e.target.value)}
                 />
             </div>
-            <div className="row mb-4 border  mb-3 p-3">
+            <div className="row mb-4 border mb-3 p-3">
                 <label htmlFor="wd-description" className="form-label">Description</label>
                 <textarea
                     id="wd-description"
@@ -74,7 +81,7 @@ export default function AssignmentEditorUpdate() {
                 />
             </div>
 
-            <div className="row mb-4 border rounded-1  p-2">
+            <div className="row mb-4 border rounded-1 p-2">
                 <div className="col-md-4 mb-3">
                     <label htmlFor="wd-points" className="form-label">Points</label>
                     <input
@@ -117,7 +124,7 @@ export default function AssignmentEditorUpdate() {
                         className="form-control"
                         onChange={(e) => handleInputChange("notAvailableAt", e.target.value)}
                     />
-                 </div>
+                </div>
             </div>
 
             <div className="d-flex justify-content-end">
