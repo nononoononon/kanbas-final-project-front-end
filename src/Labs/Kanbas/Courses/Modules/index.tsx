@@ -4,7 +4,8 @@ import ModuleControlButtons from "./ModuleControlButtons";
 import LessonControlButtons from "./LessonControlButtons";
 import { useParams } from "react-router";
 import React, {useEffect, useState} from "react";
-import * as client from "./client";
+import * as coursesClient from "../client";
+import * as modulesClient from "./client";
 import { addModule, editModule, updateModule, deleteModule,setModules }
     from "./reducer";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,22 +16,25 @@ export default function Modules() {
     const dispatch = useDispatch();
 
     const saveModule = async (module: any) => {
-        const status = await client.updateModule(module);
+        await modulesClient.updateModule(module);
         dispatch(updateModule(module));
     };
 
     const removeModule = async (moduleId: string) => {
-        await client.deleteModule(moduleId);
+        await modulesClient.deleteModule(moduleId);
         dispatch(deleteModule(moduleId));
     };
 
-    const createModule = async (module: any) => {
-        const newModule = await client.createModule(cid as string, module);
-        dispatch(addModule(newModule));
+    const createModuleForCourse = async () => {
+        if (!cid) return;
+        const newModule = { name: moduleName, course: cid };
+        const module = await coursesClient.createModuleForCourse(cid, newModule);
+        dispatch(addModule(module));
     };
 
+
     const fetchModules = async () => {
-        const modules = await client.findModulesForCourse(cid as string);
+        const modules = await coursesClient.findModulesForCourse(cid as string);
         dispatch(setModules(modules));
     };
     useEffect(() => {
@@ -40,13 +44,9 @@ export default function Modules() {
     return (
         <div>
             <ModulesControls moduleName={moduleName} setModuleName={setModuleName}
-                             addModule={() => {
-                                 createModule({ name: moduleName, course: cid });
-                                 setModuleName("");
-                             }} /><br/><br/><br/><br/>
+                             addModule={createModuleForCourse} /><br/><br/><br/><br/>
             <ul id="wd-modules" className="list-group rounded-0">
                 {modules
-                    .filter((module: any) => module.course === cid)
                     .map((module: any) => (
                         <li className="wd-module list-group-item p-0 mb-5 fs-5 border-gray">
                             <div className="wd-title p-3 ps-2 bg-secondary">
@@ -54,18 +54,16 @@ export default function Modules() {
                                 {!module.editing && module.name}
                                 { module.editing && (
                                     <input className="form-control w-50 d-inline-block" value={module.name}
-                                           onChange={(e) => saveModule({...module, name: e.target.value})}
+                                           onChange={(e) => dispatch(updateModule({ ...module, name: e.target.value })) }
                                            onKeyDown={(e) => {
                                                if (e.key === "Enter") {
-                                                   saveModule({...module, editing: false});
+                                                   saveModule({ ...module, editing: false });
                                                }
                                            }}/>
                                 )}
                                 <ModuleControlButtons
                                     moduleId={module._id}
-                                    deleteModule={(moduleId) => {
-                                        removeModule(moduleId);
-                                    }}
+                                    deleteModule={(moduleId) => removeModule(moduleId)}
                                     editModule={(moduleId) => dispatch(editModule(moduleId))} />
                             </div>
                             {module.lessons && (

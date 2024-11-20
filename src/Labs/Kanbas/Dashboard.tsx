@@ -1,7 +1,7 @@
 // Dashboard.tsx
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
-import * as db from "./Database";
+import * as coursesClient from'./Courses/client'
 import { useSelector, useDispatch } from "react-redux";
 
 interface Course {
@@ -53,26 +53,61 @@ export default function Dashboard({
     );
     const [showAllCourses, setShowAllCourses] = useState(false);
 
-    console.log("Current User:", currentUser);
-
     const isStudent = currentUser.role.toUpperCase() === "STUDENT";
+    const [allCourses, setAllCourses] = useState<Course[]>([]);
 
-    const filteredCourses = courses.filter((course) => {
-        if (isStudent) {
-            if (showAllCourses) {
-                return true; // 显示所有课程
-            } else {
-                // 仅显示学生已注册的课程
-                return enrollments.some(
-                    (enrollment) =>
-                        enrollment.user === currentUser._id && enrollment.course === course._id
-                );
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const coursesData = await coursesClient.fetchAllCourses();
+                setAllCourses(coursesData);
+            } catch (error) {
+                console.error("Failed to fetch courses:", error);
             }
-        } else {
-            // 非学生用户显示所有课程
-            return true;
+        };
+        fetchCourses();
+    }, []);
+
+    const filteredCourses = showAllCourses
+        ? allCourses // 显示所有课程
+        : courses.filter((course) =>
+            enrollments.some(
+                (enrollment) =>
+                    enrollment.user === currentUser._id && enrollment.course === course._id
+            )
+        );
+
+    const handleEnroll = async (courseId: string) => {
+        dispatch({
+            type: "ENROLL",
+            payload: {
+                userId: currentUser._id,
+                courseId,
+            },
+        });
+
+        try {
+            await coursesClient.enrollUserInCourse(currentUser._id, courseId);
+        } catch (error) {
+            console.error("Enroll failed:", error);
         }
-    });
+    };
+
+    const handleUnenroll = async (courseId: string) => {
+        dispatch({
+            type: "UNENROLL",
+            payload: {
+                userId: currentUser._id,
+                courseId,
+            },
+        });
+
+        try {
+            await coursesClient.unenrollUserFromCourse(currentUser._id, courseId);
+        } catch (error) {
+            console.error("Unenroll failed:", error);
+        }
+    };
 
     return (
         <div id="wd-dashboard">
@@ -197,13 +232,7 @@ export default function Dashboard({
                                                             className="btn btn-danger float-end"
                                                             onClick={(event) => {
                                                                 event.preventDefault();
-                                                                dispatch({
-                                                                    type: "UNENROLL",
-                                                                    payload: {
-                                                                        userId: currentUser._id,
-                                                                        courseId: course._id,
-                                                                    },
-                                                                });
+                                                                handleUnenroll(course._id);
                                                             }}
                                                         >
                                                             Unenroll
@@ -213,13 +242,7 @@ export default function Dashboard({
                                                             className="btn btn-success float-end"
                                                             onClick={(event) => {
                                                                 event.preventDefault();
-                                                                dispatch({
-                                                                    type: "ENROLL",
-                                                                    payload: {
-                                                                        userId: currentUser._id,
-                                                                        courseId: course._id,
-                                                                    },
-                                                                });
+                                                                handleEnroll(course._id);
                                                             }}
                                                         >
                                                             Enroll
