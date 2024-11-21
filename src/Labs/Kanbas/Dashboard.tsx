@@ -68,14 +68,16 @@ export default function Dashboard({
         fetchCourses();
     }, []);
 
-    const filteredCourses = showAllCourses
-        ? allCourses // 显示所有课程
-        : courses.filter((course) =>
-            enrollments.some(
-                (enrollment) =>
-                    enrollment.user === currentUser._id && enrollment.course === course._id
+    const filteredCourses = isStudent
+        ? showAllCourses
+            ? courses
+            : courses.filter((course) =>
+                enrollments.some(
+                    (enrollment) =>
+                        enrollment.user === currentUser._id && enrollment.course === course._id
+                )
             )
-        );
+        : courses;
 
     const handleEnroll = async (courseId: string) => {
         dispatch({
