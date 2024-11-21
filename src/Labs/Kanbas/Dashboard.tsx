@@ -70,7 +70,7 @@ export default function Dashboard({
 
     const filteredCourses = isStudent
         ? showAllCourses
-            ? courses
+            ? allCourses
             : courses.filter((course) =>
                 enrollments.some(
                     (enrollment) =>
