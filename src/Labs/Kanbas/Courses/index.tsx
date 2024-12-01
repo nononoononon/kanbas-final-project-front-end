@@ -7,6 +7,7 @@ import { FaAlignJustify } from "react-icons/fa";
 import PeopleTable from "./People/Table";
 import {useState} from "react";
 import * as db from '../Database';
+import People from "./People/People";
 
 
 export default function  Courses({ courses }: { courses: any[]; }) {
@@ -75,7 +76,7 @@ export default function  Courses({ courses }: { courses: any[]; }) {
                             path="Assignments/:aid"
                             element={<AssignmentEditorUpdate />}
                         />
-                        <Route path="People" element={<PeopleTable />} />
+                        <Route path="People" element={<People />} />
                     </Routes>
                 </div>
             </div>

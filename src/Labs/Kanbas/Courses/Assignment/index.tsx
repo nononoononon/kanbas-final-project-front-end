@@ -25,11 +25,13 @@ type Assignment = {
 
 export default function Assignments() {
     const { cid } = useParams<{ cid: string }>();
+    console.log("courseid",cid);
     const [assignments, setAssignments] = useState<Assignment[]>([]);
     const [newAssignment, setNewAssignment] = useState<Assignment>({
-        _id: `${Date.now()}`,
+        _id: ``,
         title: "",
         description: "",
+        course:cid, //to write in mongo db
         points: 0,
         dueDate: "",
         availableDate: "",
@@ -39,11 +41,6 @@ export default function Assignments() {
     const [showModal, setShowModal] = useState(false);
     const [assignmentToDelete, setAssignmentToDelete] = useState<Assignment | null>(null);
 
-    useEffect(() => {
-        if (cid) {
-            loadAssignments(cid);
-        }
-    }, [cid]);
 
     const loadAssignments = async (courseId: string) => {
         try {
@@ -61,13 +58,14 @@ export default function Assignments() {
                 const createdAssignment = await createAssignment(cid, assignmentToCreate);
                 setAssignments([...assignments, createdAssignment]);
                 setNewAssignment({
-                    _id: `${Date.now()}`,
+                    _id: ``,
                     title: "",
                     description: "",
                     points: 0,
                     dueDate: "",
                     availableDate: "",
                     notAvailableAt: "",
+                    course: cid,
                 });
             } catch (error) {
                 console.error("Error creating assignment:", error);
@@ -92,6 +90,21 @@ export default function Assignments() {
             }
         }
     };
+
+    const formatDate = (dateString: string): string => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "";
+        return date.toISOString().split("T")[0];
+    };
+
+    useEffect(() => {
+        if (cid) {
+            loadAssignments(cid);
+        }else {
+            console.error("Course ID (cid) is missing or invalid");
+        }
+    }, [cid]);
 
     return (
         <div id="wd-assignments" className="p-3">
@@ -146,11 +159,12 @@ export default function Assignments() {
                             <BsBookHalf className="fs-1 me-3 text-success"/>
                             <div className="w-100 d-flex justify-content-between align-items-center">
                                 <div>
-                                    <span className="fs-5 fw-bold text-black">{assignment._id}</span>
+                                    <span className="fs-5 fw-bold text-black">{assignment.title}</span>
                                     <div className="assignment-title text-muted">
                                         <span className="text-danger">{assignment.title}</span> |
-                                        <strong>Not available at</strong> {assignment.notAvailableAt} <br/>
-                                        <strong>Due</strong> : {assignment.dueDate} | {assignment.points} pt
+                                        <strong>available at</strong> {formatDate(assignment.availableDate)} |
+                                        <strong>Not available at</strong> {formatDate(assignment.notAvailableAt)} <br/>
+                                        <strong>Due</strong> : {formatDate(assignment.dueDate)} | {assignment.points} pt
                                     </div>
                                 </div>
                             </div>

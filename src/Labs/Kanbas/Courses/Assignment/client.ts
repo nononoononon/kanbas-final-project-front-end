@@ -16,9 +16,11 @@ type Assignment = {
 };
 
 export const updateAssignment = async (assignment: Assignment) => {
-    const response = await axios.put(`${ASSIGNMENTS_API}/${assignment._id}`, assignment);
+    const { _id, ...data } = assignment; // Exclude `_id` for the request body
+    const response = await axios.put(`${ASSIGNMENTS_API}/${_id}`, data);
     return response.data;
 };
+
 
 export const deleteAssignment = async (assignmentId: string) => {
     const response = await axios.delete(`${ASSIGNMENTS_API}/${assignmentId}`);

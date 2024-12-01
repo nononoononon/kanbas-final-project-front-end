@@ -17,7 +17,6 @@ type Assignment = {
 export default function AssignmentEditorUpdate() {
     const { cid, aid } = useParams<{ cid: string; aid: string }>();
     const navigate = useNavigate();
-    const dispatch = useDispatch();
 
     const [editedAssignment, setEditedAssignment] = useState<Assignment | null>(null);
 
@@ -26,6 +25,7 @@ export default function AssignmentEditorUpdate() {
             if (cid && aid) {
                 try {
                     const assignment = await findAssignmentById(cid, aid);
+                    console.log("Editing assignment:", JSON.stringify(assignment, null, 2));
                     setEditedAssignment(assignment);
                 } catch (error) {
                     console.error("Error fetching assignment:", error);
@@ -57,6 +57,12 @@ export default function AssignmentEditorUpdate() {
         return <div>Assignment not found</div>;
     }
 
+    const formatDate = (dateString: string): string => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "";
+        return date.toISOString().split("T")[0];
+    };
     return (
         <div id="wd-assignments-editor" className="container mt-5">
             <h2 className="mb-4">Assignment Editor</h2>
@@ -100,7 +106,7 @@ export default function AssignmentEditorUpdate() {
                     <input
                         type="date"
                         id="wd-due-date"
-                        value={editedAssignment.dueDate}
+                        value={formatDate(editedAssignment.dueDate)}
                         className="form-control"
                         onChange={(e) => handleInputChange("dueDate", e.target.value)}
                     />
@@ -110,7 +116,7 @@ export default function AssignmentEditorUpdate() {
                     <input
                         type="date"
                         id="wd-available-from"
-                        value={editedAssignment.availableDate}
+                        value={formatDate(editedAssignment.availableDate)}
                         className="form-control"
                         onChange={(e) => handleInputChange("availableDate", e.target.value)}
                     />
@@ -120,7 +126,7 @@ export default function AssignmentEditorUpdate() {
                     <input
                         type="date"
                         id="wd-not-available-at"
-                        value={editedAssignment.notAvailableAt}
+                        value={formatDate(editedAssignment.notAvailableAt)}
                         className="form-control"
                         onChange={(e) => handleInputChange("notAvailableAt", e.target.value)}
                     />
