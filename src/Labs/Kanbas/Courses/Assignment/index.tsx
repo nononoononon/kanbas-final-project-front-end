@@ -5,9 +5,7 @@ import LessonControlButtons from "./LessonControlButtons";
 import {useParams, Link, useNavigate, Route} from "react-router-dom";
 import * as db from "../../Database";
 import AssignmentController from "./AssignmentController"
-import { useSelector, useDispatch } from "react-redux";
 import {Button, Modal} from "react-bootstrap";
-import AssignmentEditorUpdate from "./Editor";
 import {addAssignment, deleteAssignment} from "./reducer";
 import {createAssignment, findAssignmentsForCourse} from "./client";
 
