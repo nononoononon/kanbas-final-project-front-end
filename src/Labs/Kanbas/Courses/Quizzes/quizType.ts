@@ -22,9 +22,9 @@ export type Quiz = {
     points: number;
     published: boolean;
     questions: string[]; // Array of MongoDB ObjectIds (referencing QuestionModel)
-    dueDate?: Date;
-    availableFrom?: Date;
-    availableUntil?: Date;
+    dueDate?: String;
+    availableFrom?: String;
+    availableUntil?: String;
 };
 
 export const quizInitialState: Quiz = {
@@ -49,9 +49,9 @@ export const quizInitialState: Quiz = {
     points: 0,
     published: false,
     questions: [], //question id合集
-    dueDate: new Date(),
-    availableFrom: new Date(),
-    availableUntil: new Date(),
+    dueDate: new Date().toDateString(),
+    availableFrom: new Date().toDateString(),
+    availableUntil: new Date().toDateString(),
 };
 
 export const mockQuiz: Quiz = {
@@ -76,7 +76,7 @@ export const mockQuiz: Quiz = {
     points: 30,
     published: false,
     questions: ['1234'], //question id合集
-    dueDate: new Date(),
-    availableFrom: new Date(),
-    availableUntil: new Date(),
+    dueDate: new Date().toDateString(),
+    availableFrom: new Date().toDateString(),
+    availableUntil: new Date().toDateString(),
 };

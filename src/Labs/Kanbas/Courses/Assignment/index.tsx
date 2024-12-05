@@ -23,7 +23,6 @@ type Assignment = {
 
 export default function Assignments() {
     const { cid } = useParams<{ cid: string }>();
-    console.log("courseid",cid);
     const [assignments, setAssignments] = useState<Assignment[]>([]);
     const [newAssignment, setNewAssignment] = useState<Assignment>({
         _id: ``,

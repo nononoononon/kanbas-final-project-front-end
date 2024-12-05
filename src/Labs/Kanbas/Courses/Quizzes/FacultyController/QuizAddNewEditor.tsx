@@ -277,74 +277,74 @@ export default function QuizAddNewEditor() {
                     </div>
                 </div>
             </div>
-
-            {/* Assign 时间 */}
-            <div className="row mb-3">
-                <div className="col-4 text-sm-end">
-                    <h4>Assign</h4>
-                </div>
-                <div className="col-8">
-                    <div className="card">
-                        <div className="card-body">
-                            <label className="form-label"><strong>Due</strong></label>
-                            <div className="input-group mb-3">
-                                <input
-                                    type="datetime-local"
-                                    className="form-control"
-                                    value={quiz.dueDate?.toISOString().substring(0, 16) || ""}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "dueDate",
-                                            new Date(e.target.value)
-                                        )
-                                    }
-                                />
-                                <span className="input-group-text">
-                                    <FaRegCalendarAlt/>
-                                </span>
-                            </div>
-                            <label className="form-label"><strong>Available From</strong></label>
-                            <div className="input-group mb-3">
-                                <input
-                                    type="datetime-local"
-                                    className="form-control"
-                                    value={
-                                        quiz.availableFrom?.toISOString().substring(0, 16) || ""
-                                    }
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "availableFrom",
-                                            new Date(e.target.value)
-                                        )
-                                    }
-                                />
-                                <span className="input-group-text">
-                                    <FaRegCalendarAlt/>
-                                </span>
-                            </div>
-                            <label className="form-label"><strong>Available Until</strong></label>
-                            <div className="input-group mb-3">
-                                <input
-                                    type="datetime-local"
-                                    className="form-control"
-                                    value={
-                                        quiz.availableUntil?.toISOString().substring(0, 16) || ""
-                                    }
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "availableUntil",
-                                            new Date(e.target.value)
-                                        )
-                                    }
-                                />
-                                <span className="input-group-text">
-                                    <FaRegCalendarAlt/>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            //todo:时间是string类型，记得改下表达
+            {/*/!* Assign 时间 *!/*/}
+            {/*<div className="row mb-3">*/}
+            {/*    <div className="col-4 text-sm-end">*/}
+            {/*        <h4>Assign</h4>*/}
+            {/*    </div>*/}
+            {/*    <div className="col-8">*/}
+            {/*        <div className="card">*/}
+            {/*            <div className="card-body">*/}
+            {/*                <label className="form-label"><strong>Due</strong></label>*/}
+            {/*                <div className="input-group mb-3">*/}
+            {/*                    <input*/}
+            {/*                        type="datetime-local"*/}
+            {/*                        className="form-control"*/}
+            {/*                        value={quiz.dueDate?.toISOString().substring(0, 16) || ""}*/}
+            {/*                        onChange={(e) =>*/}
+            {/*                            handleInputChange(*/}
+            {/*                                "dueDate",*/}
+            {/*                                new Date(e.target.value)*/}
+            {/*                            )*/}
+            {/*                        }*/}
+            {/*                    />*/}
+            {/*                    <span className="input-group-text">*/}
+            {/*                        <FaRegCalendarAlt/>*/}
+            {/*                    </span>*/}
+            {/*                </div>*/}
+            {/*                <label className="form-label"><strong>Available From</strong></label>*/}
+            {/*                <div className="input-group mb-3">*/}
+            {/*                    <input*/}
+            {/*                        type="datetime-local"*/}
+            {/*                        className="form-control"*/}
+            {/*                        value={*/}
+            {/*                            quiz.availableFrom?.toISOString().substring(0, 16) || ""*/}
+            {/*                        }*/}
+            {/*                        onChange={(e) =>*/}
+            {/*                            handleInputChange(*/}
+            {/*                                "availableFrom",*/}
+            {/*                                new Date(e.target.value)*/}
+            {/*                            )*/}
+            {/*                        }*/}
+            {/*                    />*/}
+            {/*                    <span className="input-group-text">*/}
+            {/*                        <FaRegCalendarAlt/>*/}
+            {/*                    </span>*/}
+            {/*                </div>*/}
+            {/*                <label className="form-label"><strong>Available Until</strong></label>*/}
+            {/*                <div className="input-group mb-3">*/}
+            {/*                    <input*/}
+            {/*                        type="datetime-local"*/}
+            {/*                        className="form-control"*/}
+            {/*                        value={*/}
+            {/*                            quiz.availableUntil?.toISOString().substring(0, 16) || ""*/}
+            {/*                        }*/}
+            {/*                        onChange={(e) =>*/}
+            {/*                            handleInputChange(*/}
+            {/*                                "availableUntil",*/}
+            {/*                                new Date(e.target.value)*/}
+            {/*                            )*/}
+            {/*                        }*/}
+            {/*                    />*/}
+            {/*                    <span className="input-group-text">*/}
+            {/*                        <FaRegCalendarAlt/>*/}
+            {/*                    </span>*/}
+            {/*                </div>*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
 
             {/* Actions */}
             <hr/>
