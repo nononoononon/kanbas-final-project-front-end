@@ -53,3 +53,30 @@ export const quizInitialState: Quiz = {
     availableFrom: new Date(),
     availableUntil: new Date(),
 };
+
+export const mockQuiz: Quiz = {
+    _id: '1234', // 测试目前是1234，正常初始为空，等mongodb给
+    title: 'New Quiz',
+    description: 'Please describe this quiz',
+    courseId: '1234', // 这个记得给值，不然报错
+    createdBy: '1234', // 这个记得给值，不然报错
+    settings: {
+        quizType: 'Graded Quiz',
+        assignmentGroup: 'Quizzes',
+        shuffleAnswers: true,
+        timeLimit: 20,
+        multipleAttempts: false,
+        attemptsAllowed: 1,
+        showCorrectAnswers: true,
+        accessCode: '',
+        oneQuestionAtATime: true,
+        webcamRequired: false,
+        lockQuestionsAfterAnswering: false,
+    },
+    points: 30,
+    published: false,
+    questions: ['1234'], //question id合集
+    dueDate: new Date(),
+    availableFrom: new Date(),
+    availableUntil: new Date(),
+};

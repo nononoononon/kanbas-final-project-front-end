@@ -8,12 +8,13 @@ import PeopleTable from "./People/Table";
 import {useState} from "react";
 import * as db from '../Database';
 import People from "./People/People";
-import Quizzes from "./Quizzes";
+import Quizzes from "./Quizzes/ShowQuizList";
 import QuizAddNewEditor from "./Quizzes/FacultyController/QuizAddNewEditor";
 import FacultyQuizController from "./Quizzes/FacultyController/FacultyQuizController";
 import FacultyReviewQuizDetails from "./Quizzes/FacultyReviewDetails";
 import QuizEditor from "./Quizzes/FacultyController/QuizEdiotr";
 import QuestionEditorIndex from "./Quizzes/FacultyController/Questions/QuestionEditorIndex";
+import QuizzesRoute from "./Quizzes";
 
 
 export default function  Courses({ courses }: { courses: any[]; }) {
@@ -83,7 +84,7 @@ export default function  Courses({ courses }: { courses: any[]; }) {
                             element={<AssignmentEditorUpdate />}
                         />
                         <Route path="People" element={<People />} />
-                        <Route path ="Quizzes/*" element={<Quizzes/>} />
+                        <Route path ="Quizzes/*" element={<QuizzesRoute/>} />
                         todo:如果editor混了就改一下
                         {/*<Route path ="Quizzes/editor" element={<QuizAddNewEditor/>}/>*/}
                         {/*<Route path="Quizzes/:qid/review" element={<FacultyReviewQuizDetails />}/>*/}

@@ -10,7 +10,7 @@ export default function QuestionEditorIndex() {
     // 你也可以选择传入qui!!!!!!
     const [quiz, setQuiz] = useState<Quiz>(quizInitialState);//得到数据这个改成刚刚得到Quiz
     //获取对应的id
-    const{cid, qid} = useParams<{ cid:string, qid: string }>();
+    const{cid, qid} = useParams();
 
     const [questions, setQuestions] = useState<Question[]>([questionInitialState]);
 
@@ -60,8 +60,8 @@ export default function QuestionEditorIndex() {
                 {questions.map((question: Question) => (
                     <li key={question._id} className="list-group-item p-3 d-flex align-items-center rounded-2">
                         <Link
-                            //todo:去到问题编辑页面，记得改链接
-                            to={`/Kanbas/Courses/${cid}/Quizzes/1234/review`}
+                            //todo:去到问题编辑页面，记得改链接,1234第一个是quizID,第二个改成questionID
+                            to={`/Kanbas/Courses/${cid}/Quizzes/1234/editor/questions/1234`}
                             className="w-100 d-flex align-items-center text-decoration-none"
                         >
                             <div className="w-100 d-flex flex-column">

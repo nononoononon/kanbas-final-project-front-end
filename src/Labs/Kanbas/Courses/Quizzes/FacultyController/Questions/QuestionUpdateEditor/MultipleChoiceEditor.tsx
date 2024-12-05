@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Question} from "../../questionType";
+import {Question} from "../../../questionType";
 
 interface MultipleChoiceEditorProps {
     question: Question; // Question passed as a prop

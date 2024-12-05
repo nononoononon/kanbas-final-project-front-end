@@ -8,9 +8,13 @@ export default function FacultyReviewQuizDetails() {
     return (
         <div>
             <div className="d-flex justify-content-center align-items-center">
-                todo:加一下preview到浏览
+                todo:加一下preview,然后创建新的attempt,然后导航，现在没法获得attemptid
                 <button id="wd-add-assignment-btn" className="btn btn-lg btn-secondary me-4">
-                    Preview</button>
+                    <Link to={`/Kanbas/Courses/${cid}/Quizzes/1234/attempt/1234/faculty`}
+                          className="text-decoration-none text-black">
+                        Preview
+                    </Link>
+                </button>
                 <button id="wd-add-assignment-btn" className="btn btn-lg btn-secondary me-4">
                     <Link to={`/Kanbas/Courses/${cid}/Quizzes/${qid}/editor`}
                           className="text-decoration-none text-black">

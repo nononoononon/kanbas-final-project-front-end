@@ -1,6 +1,8 @@
+import {Quiz} from "./quizType";
+
 export type Question = {
     _id: string; // MongoDB ObjectId
-    quizId: string; // MongoDB ObjectId referencing the Quiz
+    quizId: string | Quiz; // MongoDB ObjectId referencing the Quiz
     type: 'Multiple Choice' | 'True/False' | 'Fill in the Blank'; // Question type
     title: string; // Question title
     points: number; // Points for the question
@@ -21,3 +23,15 @@ export const questionInitialState: Question = {
     correctAnswer: '', // 默认没有正确答案
     correctAnswers: [], // 默认没有多答案
 };
+
+const mockQuestion: Question =
+    {
+        _id: "1234",
+        quizId: "1234",
+        type: "Multiple Choice",
+        title: "Sample Question",
+        points: 10,
+        questionText: "What is 2 + 2?",
+        choices: ["2", "3", "4"],
+        correctAnswer: "4",
+    }

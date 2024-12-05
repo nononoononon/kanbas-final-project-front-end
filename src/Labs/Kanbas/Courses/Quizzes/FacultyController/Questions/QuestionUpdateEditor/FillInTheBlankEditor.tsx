@@ -1,17 +1,31 @@
-import {Question} from "../../questionType";
 import {useState} from "react";
+import {Question} from "../../../questionType";
 
-interface TrueFalseEditorProps {
+interface FillInTheBlankEditorProps {
     question: Question;
     onSave: (updatedQuestion: Question) => void;
     onCancel: () => void;
 }
 
-function TrueFalseEditor({ question, onSave, onCancel }: TrueFalseEditorProps) {
+function FillInTheBlankEditor({ question, onSave, onCancel }: FillInTheBlankEditorProps) {
     const [title, setTitle] = useState<string>(question.title);
     const [points, setPoints] = useState<number>(question.points);
     const [questionText, setQuestionText] = useState<string>(question.questionText);
-    const [correctAnswer, setCorrectAnswer] = useState<string>(question.correctAnswer || "True");
+    const [correctAnswers, setCorrectAnswers] = useState<string[]>(question.correctAnswers || []);
+
+    const handleAnswerChange = (index: number, value: string) => {
+        setCorrectAnswers((prev) => {
+            const updatedAnswers = [...prev];
+            updatedAnswers[index] = value;
+            return updatedAnswers;
+        });
+    };
+
+    const addAnswer = () => setCorrectAnswers((prev) => [...prev, ""]); // Add empty answer
+
+    const removeAnswer = (index: number) => {
+        setCorrectAnswers((prev) => prev.filter((_, i) => i !== index)); // Remove answer
+    };
 
     const handleSave = () => {
         const updatedQuestion: Question = {
@@ -19,14 +33,14 @@ function TrueFalseEditor({ question, onSave, onCancel }: TrueFalseEditorProps) {
             title,
             points,
             questionText,
-            correctAnswer,
+            correctAnswers,
         };
         onSave(updatedQuestion);
     };
 
     return (
         <div>
-            <h3>True/False Question Editor</h3>
+            <h3>Fill in the Blank Question Editor</h3>
             <div className="mb-3">
                 <label>Title</label>
                 <input
@@ -58,29 +72,26 @@ function TrueFalseEditor({ question, onSave, onCancel }: TrueFalseEditorProps) {
             </div>
 
             <div className="mb-3">
-                <label>Correct Answer</label>
-                <div>
-                    <label className="me-2">
+                <label>Correct Answers</label>
+                {correctAnswers.map((answer, index) => (
+                    <div key={index} className="d-flex align-items-center mb-2">
                         <input
-                            type="radio"
-                            name="trueFalse"
-                            value="True"
-                            checked={correctAnswer === "True"}
-                            onChange={(e) => setCorrectAnswer(e.target.value)}
+                            type="text"
+                            className="form-control me-2"
+                            value={answer}
+                            onChange={(e) => handleAnswerChange(index, e.target.value)}
                         />
-                        True
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="trueFalse"
-                            value="False"
-                            checked={correctAnswer === "False"}
-                            onChange={(e) => setCorrectAnswer(e.target.value)}
-                        />
-                        False
-                    </label>
-                </div>
+                        <button
+                            className="btn btn-danger ms-2"
+                            onClick={() => removeAnswer(index)}
+                        >
+                            Remove
+                        </button>
+                    </div>
+                ))}
+                <button className="btn btn-primary" onClick={addAnswer}>
+                    Add Answer
+                </button>
             </div>
 
             <div className="mt-4">
@@ -95,4 +106,4 @@ function TrueFalseEditor({ question, onSave, onCancel }: TrueFalseEditorProps) {
     );
 }
 
-export default TrueFalseEditor;
+export default FillInTheBlankEditor;

@@ -1,10 +1,17 @@
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useState } from "react";
 import { Quiz, quizInitialState } from "../quizType";
+import {useNavigate, useParams} from "react-router-dom";
 
 export default function QuizAddNewEditor() {
+    const navigate = useNavigate();
+    const {cid} = useParams();
     //todo:初始化的时候没有userId和courseID,你要存一下复制存入
     const [quiz, setQuiz] = useState<Quiz>(quizInitialState);
+
+    const handleNavtoQuiz =() =>{
+        navigate(`/Kanbas/Courses/${cid}/Quizzes`); // 动态导航到该课程的 Quizzes 页面
+    }
 
     const handleInputChange = (field: keyof Quiz, value: any) => {
         setQuiz((prev) => ({ ...prev, [field]: value }));
@@ -354,19 +361,26 @@ export default function QuizAddNewEditor() {
                         onClick={() => {
                             handleInputChange("published", true);
                             addQuiz();
+                            handleNavtoQuiz();
                         }}
                     >
                         Save & Publish
                     </button>
                     <button
                         className="btn btn-danger float-end me-3"
-                        onClick={addQuiz}
+                        onClick={() => {
+                            addQuiz();
+                            handleNavtoQuiz();
+                        }}
                     >
                         Save
                     </button>
                     <button
                         className="btn btn-secondary float-end me-3"
-                        onClick={() => setQuiz(quizInitialState)}
+                        onClick={() => {
+                            setQuiz(quizInitialState)// 重置 Quiz
+                            handleNavtoQuiz();
+                        }}
                     >
                         Cancel
                     </button>

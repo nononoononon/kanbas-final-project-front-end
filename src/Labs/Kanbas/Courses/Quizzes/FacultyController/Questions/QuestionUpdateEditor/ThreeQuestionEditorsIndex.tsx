@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import TrueFalseEditor from "./TrueFalseEditor";
 import FillInTheBlankEditor from "./FillInTheBlankEditor";
-import { Question } from "../../questionType";
+import { Question } from "../../../questionType";
 import MultipleChoiceEditor from "./MultipleChoiceEditor";
 
 const mockQuestion: Question =
@@ -19,9 +19,9 @@ const mockQuestion: Question =
 
 //todo:这个里面传入真正的question数据
 export default function ThreeQuestionEditors() {
-    const { cid, qid } = useParams();
+    const { cid, qid,questionId } = useParams();
     const navigate = useNavigate();
-    // todo:这个到时候变成真的数据，就直接删除这个了，从函数中传入
+    // todo:这个到时候变成真的数据，就直接删除这个了，fetch questionID得到数据，useeffect更新
     const question = mockQuestion;
 
     if (!question) {
