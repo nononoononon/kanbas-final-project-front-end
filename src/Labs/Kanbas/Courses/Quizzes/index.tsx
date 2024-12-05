@@ -7,6 +7,14 @@ import {Link, Route, Routes, useParams} from "react-router-dom";
 import {Quiz, quizInitialState} from "./quizType";
 import QuizControlButtons from "./FacultySideThreeDotsController/DotsController";
 import QuizAddNewEditor from "./FacultyController/QuizAddNewEditor";
+import Home from "../Home";
+import Modules from "../Modules";
+import AssignmentEditorUpdate from "../Assignment/Editor";
+import People from "../People/People";
+import FacultyReviewQuizDetails from "./FacultyReviewDetails";
+import QuizEditor from "./FacultyController/QuizEdiotr";
+import QuestionEditorIndex from "./FacultyController/Questions/QuestionEditorIndex";
+import QuizzesRoutes from "./Route";
 //这个里面定义了数据类型，需要查看看这里
 
 

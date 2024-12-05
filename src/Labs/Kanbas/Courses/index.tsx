@@ -13,7 +13,7 @@ import QuizAddNewEditor from "./Quizzes/FacultyController/QuizAddNewEditor";
 import FacultyQuizController from "./Quizzes/FacultyController/FacultyQuizController";
 import FacultyReviewQuizDetails from "./Quizzes/FacultyReviewDetails";
 import QuizEditor from "./Quizzes/FacultyController/QuizEdiotr";
-import QuestionEditorIndex from "./Quizzes/FacultyController/QuestionEditorIndex";
+import QuestionEditorIndex from "./Quizzes/FacultyController/Questions/QuestionEditorIndex";
 
 
 export default function  Courses({ courses }: { courses: any[]; }) {
@@ -83,12 +83,12 @@ export default function  Courses({ courses }: { courses: any[]; }) {
                             element={<AssignmentEditorUpdate />}
                         />
                         <Route path="People" element={<People />} />
-                        <Route path ="Quizzes" element={<Quizzes/>} />
+                        <Route path ="Quizzes/*" element={<Quizzes/>} />
                         todo:如果editor混了就改一下
-                        <Route path ="Quizzes/editor" element={<QuizAddNewEditor/>}/>
-                        <Route path="Quizzes/:qid/review" element={<FacultyReviewQuizDetails />}/>
-                        <Route path ="Quizzes/:qid/editor" element={<QuizEditor/>}/>
-                        <Route path ="Quizzes/:qid/editor/questions" element={<QuestionEditorIndex/>}/>
+                        {/*<Route path ="Quizzes/editor" element={<QuizAddNewEditor/>}/>*/}
+                        {/*<Route path="Quizzes/:qid/review" element={<FacultyReviewQuizDetails />}/>*/}
+                        {/*<Route path ="Quizzes/:qid/editor" element={<QuizEditor/>}/>*/}
+                        {/*<Route path ="Quizzes/:qid/editor/questions" element={<QuestionEditorIndex/>}/>*/}
                     </Routes>
                 </div>
             </div>

@@ -1,0 +1,23 @@
+export type Question = {
+    _id: string; // MongoDB ObjectId
+    quizId: string; // MongoDB ObjectId referencing the Quiz
+    type: 'Multiple Choice' | 'True/False' | 'Fill in the Blank'; // Question type
+    title: string; // Question title
+    points: number; // Points for the question
+    questionText: string; // Text of the question
+    choices?: string[]; // Possible answers for Multiple Choice questions
+    correctAnswer?: string; // Correct answer for Multiple Choice or Fill in the Blank
+    correctAnswers?: string[]; // Multiple correct answers for Fill in the Blank
+};
+
+export const questionInitialState: Question = {
+    _id: '0000', // 默认值，用于测试；实际情况留空，待 MongoDB 填充
+    quizId: '', // 必须设置为有效的 Quiz ID
+    type: 'Multiple Choice', // 默认问题类型
+    title: 'New Question', // 默认标题
+    points: 20, // 默认分值
+    questionText: 'Write your question here...', // 默认问题文本
+    choices: [], // 默认没有选项
+    correctAnswer: '', // 默认没有正确答案
+    correctAnswers: [], // 默认没有多答案
+};
