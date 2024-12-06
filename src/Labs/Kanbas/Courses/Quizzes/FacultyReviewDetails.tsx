@@ -27,7 +27,7 @@ export default function FacultyReviewQuizDetails() {
             <div className="d-flex justify-content-center align-items-center">
                 todo:加一下preview,然后创建新的attempt,然后导航，现在没法获得attemptid
                 <button id="wd-add-assignment-btn" className="btn btn-lg btn-secondary me-4">
-                    <Link to={`/Kanbas/Courses/${cid}/Quizzes/1234/attempt/1234/faculty`}
+                    <Link to={`/Kanbas/Courses/${cid}/Quizzes/${qid}/attempt/1234/faculty`}
                           className="text-decoration-none text-black">
                         Preview
                     </Link>
@@ -35,7 +35,6 @@ export default function FacultyReviewQuizDetails() {
                 <button id="wd-add-assignment-btn" className="btn btn-lg btn-secondary me-4">
                     <Link to={`/Kanbas/Courses/${cid}/Quizzes/${qid}/editor`}
                           className="text-decoration-none text-black">
-                        <FaPencil/>
                         Edit
                     </Link>
                 </button>

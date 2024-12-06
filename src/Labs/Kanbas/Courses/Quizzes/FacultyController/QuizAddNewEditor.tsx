@@ -1,9 +1,10 @@
 import { FaRegCalendarAlt } from "react-icons/fa";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { Quiz, quizInitialState } from "../quizType";
 import {useNavigate, useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {createQuiz} from "../client";
+import {questionInitialState} from "../questionType";
 interface User {
     _id: string;
     role: string;
@@ -83,6 +84,11 @@ export default function QuizAddNewEditor() {
         }
     };
 
+    useEffect(() => {
+        if (cid) {
+            setQuiz(quizInitialState);
+        }
+    }, []);
     return (
         <div className="container mt-4">
             {/* 标题 */}

@@ -1,7 +1,9 @@
 import {IoAdd} from "react-icons/io5";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Modal} from "react-bootstrap";
-import {questionInitialState} from "../../questionType";
+import {defaultQuizId, questionInitialState} from "../../questionType";
+import {addQuestionToQuiz} from "../../client";
+import {useParams} from "react-router-dom";
 
 export default function AddQuestionController() {
     // 用来打开弹窗create new question
@@ -11,12 +13,29 @@ export default function AddQuestionController() {
     const closeModal = () => setIsModalOpen(false);
 
     const [question, setQuestion] = useState(questionInitialState);
+    const {qid} = useParams();
+    const handleAddNewQuestion = () => {
+        try{
+            const formattedQuestion = {
+                ...question,
+                quizId: qid, // 正确的quizId
+            };
 
-    const addNewQuestion = () => {
-        // TODO: 实现添加问题的逻辑，然后用可能是要用reducer出来问题获取
+            const response = addQuestionToQuiz(qid??defaultQuizId,question);
+
+        }catch (error){
+            console.error("Error creating question:", error);
+            alert("Error saving quiz. Please check console logs for more details.");
+        }
         console.log('Question Saved:', question);
         closeModal();
     };
+
+    useEffect(() => {
+        if (isModalOpen) {
+            setQuestion(questionInitialState);
+        }
+    }, [isModalOpen]);
 
     return(
         <div id="wd-question-button" className="p-3">
@@ -110,7 +129,7 @@ export default function AddQuestionController() {
                         <button className="btn btn-secondary" onClick={closeModal}>
                             Cancel
                         </button>
-                        <button className="btn btn-danger" onClick={addNewQuestion}>
+                        <button className="btn btn-danger" onClick={handleAddNewQuestion}>
                             Add Question
                         </button>
                     </div>

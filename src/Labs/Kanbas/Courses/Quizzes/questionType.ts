@@ -34,4 +34,6 @@ const mockQuestion: Question =
         questionText: "What is 2 + 2?",
         choices: ["2", "3", "4"],
         correctAnswer: "4",
-    }
+    };
+
+export const defaultQuizId : string =  "674bec380e138b094ca2784c";

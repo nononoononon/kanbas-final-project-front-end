@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {Question} from "../../../questionType";
+import {useNavigate, useParams} from "react-router-dom";
 
 interface MultipleChoiceEditorProps {
     question: Question; // Question passed as a prop
@@ -35,6 +36,11 @@ export default function MultipleChoiceEditor({ question, onSave, onCancel }: Mul
             questionText,
             choices,
         });
+    };
+    const navigate = useNavigate()
+    const {cid,qid} = useParams()
+    const handleCancel = () => {
+        navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/editor/questions`);
     };
 
     return (
@@ -94,7 +100,7 @@ export default function MultipleChoiceEditor({ question, onSave, onCancel }: Mul
             </div>
 
             <div className="mt-4">
-                <button className="btn btn-secondary me-2" onClick={onCancel}>
+                <button className="btn btn-secondary me-2" onClick={handleCancel}>
                     Cancel
                 </button>
                 <button className="btn btn-success" onClick={handleSave}>

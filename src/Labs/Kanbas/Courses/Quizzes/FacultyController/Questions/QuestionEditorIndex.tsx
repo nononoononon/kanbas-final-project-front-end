@@ -1,8 +1,12 @@
 import {Link, useParams} from "react-router-dom";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Quiz, quizInitialState} from "../../quizType";
 import AddQuestionController from "./AddQuestionController";
-import {Question, questionInitialState} from "../../questionType";
+import {defaultQuizId, Question, questionInitialState} from "../../questionType";
+import {getQuestionsForQuiz} from "../../client";
+import {IoEllipsisVertical} from "react-icons/io5";
+import {FaTrash} from "react-icons/fa";
+import {FaPencil} from "react-icons/fa6";
 
 export default function QuestionEditorIndex() {
 
@@ -15,12 +19,14 @@ export default function QuestionEditorIndex() {
     const [questions, setQuestions] = useState<Question[]>([questionInitialState]);
 
     //todo:获取完整的question数据，要传入qid查找
-    const fetchQuestions = async (quizId: string) => {
+    const fetchQuestions = async () => {
         try {
             console.log("Fetching questions with ID:", qid);
-            //todo:这个改成真正的fetch逻辑
-            const fetchedQuestions = [questionInitialState];
-            setQuestions(fetchedQuestions); // Backup data for cancel functionality
+            if(qid){
+                const fetchedQuestions =  await getQuestionsForQuiz(qid);
+                setQuestions(fetchedQuestions)
+            }
+
         } catch (error) {
             console.error("Error fetching quiz:", error);
         }
@@ -37,7 +43,11 @@ export default function QuestionEditorIndex() {
         }
     };
 
-    //todo:useeffect每次进来就要fetchQuestions
+    useEffect(() => {
+        if (cid) {
+            fetchQuestions();
+        }
+    }, []);
 
     return(
         <div className="container mt-4">
@@ -84,6 +94,11 @@ export default function QuestionEditorIndex() {
                                 </div>
                             </div>
                         </Link>
+                        <FaPencil className="text-secondary me-3 fs-5"/>
+                        <FaTrash
+                            className="text-danger me-3 fs-5"
+                            onClick={() => 0}
+                        />
                     </li>
                 ))}
             </ul>

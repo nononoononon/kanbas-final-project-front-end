@@ -6,11 +6,9 @@ import {getQuizById, updateQuiz} from "../client";
 import {findAssignmentById} from "../../Assignment/client";
 
 export default function QuizEditor() {
-    //todo:获取qid,fetch数据，记得保留一份previousQuiz,点击取消的时候setQuiz (previousQuiz)
-    const [quiz, setQuiz] = useState<Quiz >(quizInitialState);//得到数据这个改成previousQuiz
+    const [quiz, setQuiz] = useState<Quiz >(quizInitialState);//可能这里会有问题
     const {cid,qid} = useParams();
     const navigate = useNavigate();
-    //todo:记得用useeffect每次qid变化就更新数据
 
     const handleInputChange = (field: keyof Quiz, value: any) => {
         setQuiz((prev) => ({ ...prev, [field]: value }));
@@ -391,12 +389,6 @@ export default function QuizEditor() {
 
             {/* Actions */}
             <hr/>
-            {/*TODO:
-                        1.save and publish 记得传递下publish == true，然后到quizz主界面
-                        2.save就不管navigate到 Quiz Details
-                        3.cancel 和 1一样，但就注意就是不要调用save函数储存数据到数据库
-
-                    */}
             <div className="row">
                 <div className="col-12 text-center">
                     <button

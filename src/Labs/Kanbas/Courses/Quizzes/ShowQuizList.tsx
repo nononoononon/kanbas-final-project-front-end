@@ -48,7 +48,6 @@ export default function Quizzes() {
         }
     };
 
-    //delete quiz todo:稍后测试
     const handleDeleteQuizzes = async ( quizId: string) => {
         console.log("delete quizId:  " + quizId)
         try{
@@ -126,7 +125,6 @@ export default function Quizzes() {
                     Assignment Quizzes
                 </div>
                 <div className="d-flex justify-content-end align-items-center">
-
                     <IoEllipsisVertical className="fs-1 text-muted ms-2"/>
                 </div>
             </div>
