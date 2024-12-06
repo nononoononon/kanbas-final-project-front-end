@@ -1,5 +1,5 @@
 import axios from "axios";
-export const REMOTE_SERVER = process.env.REACT_APP_REMOTE_SERVER;
+export const REMOTE_SERVER = "http://localhost:4000";
 export const COURSES_API = `${REMOTE_SERVER}/api/courses`;
 export const ENROLL_API = `${REMOTE_SERVER}/api/enrollments`;
 const axiosWithCredentials = axios.create({ withCredentials: true });
