@@ -29,7 +29,7 @@ export default function QuizzesRoute() {
                         {/* 编辑测验 */}
                         <Route path=":qid/editor" element={<QuizEditor />} />
 
-                        {/* 新建测验问题 */}
+                        {/* 测验问题总界面 */}
                         <Route path=":qid/editor/questions" element={<QuestionEditorIndex />} />
                         {/* 编辑测验问题 */}
                         <Route

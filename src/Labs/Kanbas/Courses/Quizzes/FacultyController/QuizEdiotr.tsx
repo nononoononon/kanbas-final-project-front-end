@@ -411,7 +411,10 @@ export default function QuizEditor() {
                     </button>
                     <button
                         className="btn btn-secondary float-end me-3"
-                        onClick={() => setQuiz(quizInitialState)}
+                        onClick={() => {
+                            setQuiz(quizInitialState)
+                            handleNavtoQuizzes();
+                        }}
                     >
                         Cancel
                     </button>

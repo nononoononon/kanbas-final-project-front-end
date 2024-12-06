@@ -86,6 +86,12 @@ export const deleteQuestion = async (questionId: string) => {
     return data;
 };
 
+// get a question by id(Faculty only)
+export const getQuestionById = async (questionId: string) => {
+    const { data } = await axiosWithCredentials.get(`${QUESTIONS_API}/${questionId}`);
+    return data;
+};
+
 // ==================== Attempt Functions ====================
 
 const ATTEMPTS_API = `${REMOTE_SERVER}/api/attempts`;

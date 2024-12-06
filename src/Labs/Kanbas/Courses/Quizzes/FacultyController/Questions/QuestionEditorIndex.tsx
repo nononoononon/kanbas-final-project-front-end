@@ -1,24 +1,21 @@
-import {Link, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import {Quiz, quizInitialState} from "../../quizType";
 import AddQuestionController from "./AddQuestionController";
 import {defaultQuizId, Question, questionInitialState} from "../../questionType";
-import {getQuestionsForQuiz} from "../../client";
+import {getQuestionsForQuiz, getQuizById} from "../../client";
 import {IoEllipsisVertical} from "react-icons/io5";
 import {FaTrash} from "react-icons/fa";
 import {FaPencil} from "react-icons/fa6";
 
 export default function QuestionEditorIndex() {
 
-    //todo:获取qid,fetch数据，记得保留一份previousQuiz,点击取消的时候setQuiz (previousQuiz),
-    // 你也可以选择传入qui!!!!!!
-    const [quiz, setQuiz] = useState<Quiz>(quizInitialState);//得到数据这个改成刚刚得到Quiz
+    const [quiz, setQuiz] = useState<Quiz>();//得到数据这个改成刚刚得到Quiz
     //获取对应的id
     const{cid, qid} = useParams();
 
-    const [questions, setQuestions] = useState<Question[]>([questionInitialState]);
+    const [questions, setQuestions] = useState<Question[]>([]);
 
-    //todo:获取完整的question数据，要传入qid查找
     const fetchQuestions = async () => {
         try {
             console.log("Fetching questions with ID:", qid);
@@ -31,9 +28,28 @@ export default function QuestionEditorIndex() {
             console.error("Error fetching quiz:", error);
         }
     };
+    const loadQuiz = async () => {
+        if (qid) {
+            try {
+                const quiz = await getQuizById(qid);
+                setQuiz(quiz);
+            } catch (error) {
+                console.error("Error fetching assignment:", error);
+            }
+        }
+    };
 
     const updateQuiz = async () => {
-        // todo:补充好这个update只update数组，questions数组，你也可以选择从上面传入，看你自己
+        if (!quiz || !quiz._id) {
+            console.error("Quiz data is invalid or missing _id");
+            return;
+        }
+
+        // 准备要更新的数据
+        const updatedData = {
+            questions: questions, // 只更新 questions 数组
+        };
+
         try {
             console.log("updating quiz:", quiz);
             // Example: await api.update(quiz);
@@ -43,16 +59,23 @@ export default function QuestionEditorIndex() {
         }
     };
 
+    const navigate = useNavigate()
+    const handleNavtoQuizzes = () => {
+        navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/editor`);
+    }
+
     useEffect(() => {
-        if (cid) {
+        if (cid && qid) {
             fetchQuestions();
+            loadQuiz();
         }
     }, []);
 
-    return(
+    return (
         <div className="container mt-4">
+
             {/*todo:这个数据用reducer来更新,不然更新不了，或者你试试*/}
-            <h5 className="text-end ">points {quiz.points}</h5>
+            <h5 className="text-end ">points : {quiz?.points ?? "N/A"}</h5>
             {/* Tabs */}
             <div className="tabs">
                 <Link to={`/Kanbas/Courses/${cid}/Quizzes/${qid}/editor`}
@@ -70,8 +93,8 @@ export default function QuestionEditorIndex() {
                 {questions.map((question: Question) => (
                     <li key={question._id} className="list-group-item p-3 d-flex align-items-center rounded-2">
                         <Link
-                            //todo:去到问题编辑页面，记得改链接,1234第一个是quizID,第二个改成questionID
-                            to={`/Kanbas/Courses/${cid}/Quizzes/1234/editor/questions/1234`}
+                            //渠道商编辑详情页面
+                            to={`/Kanbas/Courses/${cid}/Quizzes/${qid}/editor/questions/${question._id}`}
                             className="w-100 d-flex align-items-center text-decoration-none"
                         >
                             <div className="w-100 d-flex flex-column">
@@ -107,12 +130,6 @@ export default function QuestionEditorIndex() {
 
             <hr/>
 
-            {/*TODO:
-                        1.save and publish 记得传递下publish == true，然后到quizz主界面
-                        2.save就不管navigate到 Quiz Details
-                        3.cancel 和 1一样，但就注意就是不要调用save函数储存数据到数据库
-
-                    */}
             <div className="row">
                 <div className="col-12 text-center">
                     <button
@@ -123,7 +140,7 @@ export default function QuestionEditorIndex() {
                     </button>
                     <button
                         className="btn btn-secondary float-end me-2"
-                        onClick={() => setQuiz(quizInitialState)}//todo：这个改成previous
+                        onClick={() => handleNavtoQuizzes()}
                     >
                         Cancel
                     </button>
