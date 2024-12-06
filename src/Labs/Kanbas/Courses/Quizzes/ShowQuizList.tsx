@@ -3,9 +3,9 @@ import FacultyQuizController from "./FacultyController/FacultyQuizController";
 import {BsBookHalf, BsGripVertical, BsPlus} from "react-icons/bs";
 import React, {useEffect, useState} from "react";
 import {IoEllipsisVertical} from "react-icons/io5";
-import {Link, Route, Routes, useParams} from "react-router-dom";
+import {Link, Route, Routes, useNavigate, useParams} from "react-router-dom";
 import {Quiz, quizInitialState} from "./quizType";//这个里面定义了数据类型，需要查看看这里
-import { getQuizzesByCourse } from './client';
+import {deleteQuiz, getQuizzesByCourse, togglePublishQuiz} from './client';
 import QuizControlButtons from "./FacultySideThreeDotsController/DotsController";
 import {useSelector} from "react-redux";
 
@@ -48,10 +48,53 @@ export default function Quizzes() {
         }
     };
 
+    //delete quiz todo:稍后测试
+    const handleDeleteQuizzes = async ( quizId: string) => {
+        console.log("delete quizId:  " + quizId)
+        try{
+            const response = await deleteQuiz(quizId);
+            if (response.status === 204) {
+                console.log("Quiz deleted successfully");
+                // 从状态中移除已删除的 quiz
+                setQuizzes((prevQuizzes) => prevQuizzes.filter((quiz) => quiz._id !== quizId));
+            }
+        }catch (error){
+            console.error("Error deleting quizzes:", error);
+        }
+    }
+
+    //nav to edit page
+    const navigate = useNavigate();
+    const handleNavToEditPage = (quizId: string, courseId: string)  => {
+        navigate(`/Kanbas/Courses/${courseId}/Quizzes/${quizId}/editor`);
+    };
+
+    const handleTogglePublishQuiz = async (courseId: string,quizId: string) => {
+        if (!quizId) {
+            console.error("Quiz ID is missing");
+            return;
+        }
+        try {
+            // 调用后端 API 切换发布状态
+            const response = await togglePublishQuiz(quizId);
+
+            if (response) {
+                console.log(`Quiz ${quizId} publish status updated successfully.`);
+                // 如果需要，更新前端状态，例如重新获取所有 quizzes 列表
+                fetchQuizzes(courseId);
+            } else {
+                console.warn(`Failed to update publish status for quiz ${quizId}.`);
+            }
+        } catch (error) {
+            console.error(`Error toggling publish status for quiz ${quizId}:`, error);
+        }
+
+    }
+
     //传入user role,是教授导航到编辑，学生导航到考试
     function navToDifferentLink (cid: string, quizId: string):string{
         if (isFacultyOrAdmin) {
-            return `/Kanbas/Courses/${cid}/Quizzes/${quizId}/Edit`;
+            return `/Kanbas/Courses/${cid}/Quizzes/${quizId}/review`;
         }else{
             return `/Kanbas/Courses/${cid}/Quizzes/${quizId}`;
         }
@@ -64,7 +107,7 @@ export default function Quizzes() {
         }else {
             console.error("Course ID (cid) is missing or invalid");
         }
-    }, [cid]);
+    }, []);
 
     return (
         <div id="wd-quizzes">
@@ -122,8 +165,8 @@ export default function Quizzes() {
                         </Link>
                         <div className="text-muted ms-auto">
                             {/*你可以根据你传入参数不同来修改函数，我只是实现基础的*/}
-                            <QuizControlButtons quiz={quiz} deleteQuiz={() => 0} editQuiz={() => 0}
-                                                publishQuiz={() => 0}/>
+                            <QuizControlButtons quiz={quiz} deleteQuiz={() => handleDeleteQuizzes(quiz._id)} editQuiz={() => handleNavToEditPage(cid ?? "6747e89997ff8ea63ab721ae",quiz._id )}
+                                                publishQuiz={() => handleTogglePublishQuiz(cid ?? "6747e89997ff8ea63ab721ae",quiz._id )}/>
                         </div>
                     </li>
                 ))}

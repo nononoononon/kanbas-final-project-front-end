@@ -42,8 +42,8 @@ export const deleteQuiz = async (quizId: string) => {
 
 // Publish or unpublish a quiz (Faculty only)
 export const togglePublishQuiz = async (quizId: string) => {
-    const { data } = await axiosWithCredentials.post(`${QUIZZES_API}/${quizId}/publishStatus`);
-    return data.published;
+    const { data } = await axiosWithCredentials.put(`${QUIZZES_API}/${quizId}/publishStatus`);
+    return data;
 };
 
 // ==================== Question Functions ====================
