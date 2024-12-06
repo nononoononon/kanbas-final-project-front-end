@@ -13,8 +13,8 @@ export type Question = {
 };
 
 export const questionInitialState: Question = {
-    _id: '0000', // 默认值，用于测试；实际情况留空，待 MongoDB 填充
-    quizId: '', // 必须设置为有效的 Quiz ID
+    _id: '674bf70a05421f3c54d1760c', // 默认值，用于测试；实际情况留空，待 MongoDB 填充
+    quizId: '674bec380e138b094ca2784c', // 必须设置为有效的 Quiz ID
     type: 'Multiple Choice', // 默认问题类型
     title: 'New Question', // 默认标题
     points: 20, // 默认分值

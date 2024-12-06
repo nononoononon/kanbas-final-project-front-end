@@ -149,16 +149,16 @@ export default function Quizzes() {
                                 <div className="text-muted">
                                     <p>
                                         <strong>Available
-                                            at:</strong> {quiz.availableFrom ? quiz.availableFrom.split('T')[0] : "N/A"} |
+                                            at:</strong> {quiz.availableFrom ? new Date(quiz.availableFrom).toLocaleDateString() : "N/A"} |
                                         <strong> Not available
-                                            at:</strong> {quiz.availableUntil ? quiz.availableUntil.split('T')[0] : "N/A"}
+                                            at:</strong> {quiz.availableUntil ? new Date(quiz.availableUntil).toLocaleDateString() : "N/A"}
                                     </p>
                                 </div>
 
                                 {/* Due Date and Points */}
                                 <div className="text-muted">
                                     <p>
-                                        <strong>Due:</strong> {quiz.dueDate ? quiz.dueDate.split('T')[0] : "N/A"} | <strong>{quiz.points || 0} pt</strong>
+                                        <strong>Due:</strong> {quiz.availableFrom ? new Date(quiz.availableFrom).toLocaleDateString() : "N/A"} | <strong>{quiz.points || 0} pt</strong>
                                     </p>
                                 </div>
                             </div>

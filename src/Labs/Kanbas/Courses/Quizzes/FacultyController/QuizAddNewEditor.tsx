@@ -2,11 +2,30 @@ import { FaRegCalendarAlt } from "react-icons/fa";
 import { useState } from "react";
 import { Quiz, quizInitialState } from "../quizType";
 import {useNavigate, useParams} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {createQuiz} from "../client";
+interface User {
+    _id: string;
+    role: string;
+}
+
+interface Enrollment {
+    user: string;
+    course: string;
+}
+interface RootState {
+    accountReducer: {
+        currentUser: User;
+    };
+    enrollmentReducer: {
+        enrollments: Enrollment[];
+    };
+}
 
 export default function QuizAddNewEditor() {
     const navigate = useNavigate();
     const {cid} = useParams();
-    //todo:初始化的时候没有userId和courseID,你要存一下复制存入
+    const { currentUser } = useSelector((state: RootState) => state.accountReducer);
     const [quiz, setQuiz] = useState<Quiz>(quizInitialState);
 
     const handleNavtoQuiz =() =>{
@@ -25,13 +44,42 @@ export default function QuizAddNewEditor() {
     };
 
     const addQuiz = async () => {
-        // todo:补充好这个add，检查下数据传入正确吗
         try {
-            console.log("Saving quiz:", quiz);
-            // Example: await api.addQuiz(quiz);
-            alert("Quiz saved successfully!");
+
+            const formattedQuiz = {
+                ...quiz,
+                //courseId: cid, // 确保传递正确的课程 ID
+                createdBy: currentUser._id, // 当前用户作为创建者
+            };
+
+            console.log("Saving quiz:", formattedQuiz);
+
+            // 调用后端 API
+            const response = createQuiz(cid??"6747e89997ff8ea63ab721ae",formattedQuiz);
+
         } catch (error) {
             console.error("Error saving quiz:", error);
+            alert("Error saving quiz. Please check console logs for more details.");
+        }
+    };
+
+    const addQuizWithPublish = async () => {
+        try {
+
+            const formattedQuiz = {
+                ...quiz,
+                published:true,
+                createdBy: currentUser._id, // 当前用户作为创建者
+            };
+
+            console.log("Saving quiz:", formattedQuiz);
+
+            // 调用后端 API
+            const response = createQuiz(cid??"6747e89997ff8ea63ab721ae",formattedQuiz);
+
+        } catch (error) {
+            console.error("Error saving quiz:", error);
+            alert("Error saving quiz. Please check console logs for more details.");
         }
     };
 
@@ -277,90 +325,80 @@ export default function QuizAddNewEditor() {
                     </div>
                 </div>
             </div>
-            //todo:时间是string类型，记得改下表达
-            {/*/!* Assign 时间 *!/*/}
-            {/*<div className="row mb-3">*/}
-            {/*    <div className="col-4 text-sm-end">*/}
-            {/*        <h4>Assign</h4>*/}
-            {/*    </div>*/}
-            {/*    <div className="col-8">*/}
-            {/*        <div className="card">*/}
-            {/*            <div className="card-body">*/}
-            {/*                <label className="form-label"><strong>Due</strong></label>*/}
-            {/*                <div className="input-group mb-3">*/}
-            {/*                    <input*/}
-            {/*                        type="datetime-local"*/}
-            {/*                        className="form-control"*/}
-            {/*                        value={quiz.dueDate?.toISOString().substring(0, 16) || ""}*/}
-            {/*                        onChange={(e) =>*/}
-            {/*                            handleInputChange(*/}
-            {/*                                "dueDate",*/}
-            {/*                                new Date(e.target.value)*/}
-            {/*                            )*/}
-            {/*                        }*/}
-            {/*                    />*/}
-            {/*                    <span className="input-group-text">*/}
-            {/*                        <FaRegCalendarAlt/>*/}
-            {/*                    </span>*/}
-            {/*                </div>*/}
-            {/*                <label className="form-label"><strong>Available From</strong></label>*/}
-            {/*                <div className="input-group mb-3">*/}
-            {/*                    <input*/}
-            {/*                        type="datetime-local"*/}
-            {/*                        className="form-control"*/}
-            {/*                        value={*/}
-            {/*                            quiz.availableFrom?.toISOString().substring(0, 16) || ""*/}
-            {/*                        }*/}
-            {/*                        onChange={(e) =>*/}
-            {/*                            handleInputChange(*/}
-            {/*                                "availableFrom",*/}
-            {/*                                new Date(e.target.value)*/}
-            {/*                            )*/}
-            {/*                        }*/}
-            {/*                    />*/}
-            {/*                    <span className="input-group-text">*/}
-            {/*                        <FaRegCalendarAlt/>*/}
-            {/*                    </span>*/}
-            {/*                </div>*/}
-            {/*                <label className="form-label"><strong>Available Until</strong></label>*/}
-            {/*                <div className="input-group mb-3">*/}
-            {/*                    <input*/}
-            {/*                        type="datetime-local"*/}
-            {/*                        className="form-control"*/}
-            {/*                        value={*/}
-            {/*                            quiz.availableUntil?.toISOString().substring(0, 16) || ""*/}
-            {/*                        }*/}
-            {/*                        onChange={(e) =>*/}
-            {/*                            handleInputChange(*/}
-            {/*                                "availableUntil",*/}
-            {/*                                new Date(e.target.value)*/}
-            {/*                            )*/}
-            {/*                        }*/}
-            {/*                    />*/}
-            {/*                    <span className="input-group-text">*/}
-            {/*                        <FaRegCalendarAlt/>*/}
-            {/*                    </span>*/}
-            {/*                </div>*/}
-            {/*            </div>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
+
+
+            {/* Assign 时间 */}
+            <div className="row mb-3">
+                <div className="col-4 text-sm-end">
+                    <h4>Assign</h4>
+                </div>
+                <div className="col-8">
+                    <div className="card">
+                        <div className="card-body">
+                            <label className="form-label"><strong>Due</strong></label>
+                            <div className="input-group mb-3">
+                                <input
+                                    type="datetime-local"
+                                    className="form-control"
+                                    value={quiz.dueDate ? new Date(quiz.dueDate).toLocaleDateString() : "N/A"}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "dueDate",
+                                            new Date(e.target.value)
+                                        )
+                                    }
+                                />
+                                <span className="input-group-text">
+                                    <FaRegCalendarAlt/>
+                                </span>
+                            </div>
+                            <label className="form-label"><strong>Available From</strong></label>
+                            <div className="input-group mb-3">
+                                <input
+                                    type="datetime-local"
+                                    className="form-control"
+                                    value={quiz.availableFrom ? new Date(quiz.availableFrom).toLocaleDateString() : "N/A"}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "availableFrom",
+                                            new Date(e.target.value)
+                                        )
+                                    }
+                                />
+                                <span className="input-group-text">
+                                    <FaRegCalendarAlt/>
+                                </span>
+                            </div>
+                            <label className="form-label"><strong>Available Until</strong></label>
+                            <div className="input-group mb-3">
+                                <input
+                                    type="datetime-local"
+                                    className="form-control"
+                                    value={quiz.availableUntil ? new Date(quiz.availableUntil).toLocaleDateString() : "N/A"}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "availableUntil",
+                                            new Date(e.target.value)
+                                        )
+                                    }
+                                />
+                                <span className="input-group-text">
+                                    <FaRegCalendarAlt/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Actions */}
             <hr/>
-            {/*TODO:
-                        1.save and publish 记得传递下publish == true，然后到quizz主界面
-                        2.save就不管navigate到 Quiz Details
-                        3.cancel 和 1一样，但就注意就是不要调用save函数储存数据到数据库
-                        4.建议都改成button然后通过link来handong函数
-                    */}
             <div className="row">
                 <div className="col-12 text-center">
                     <button
                         className="btn btn-danger float-end me-3"
                         onClick={() => {
-                            handleInputChange("published", true);
-                            addQuiz();
+                            addQuizWithPublish();
                             handleNavtoQuiz();
                         }}
                     >

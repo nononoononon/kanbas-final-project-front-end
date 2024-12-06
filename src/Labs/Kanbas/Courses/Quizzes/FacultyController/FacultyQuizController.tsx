@@ -1,15 +1,13 @@
 import {BsSearch} from "react-icons/bs";
 import {IoAdd} from "react-icons/io5";
-import React, {useState} from "react";
-import QuizAddNewEditor from "./QuizAddNewEditor";
-import {useNavigate} from "react-router-dom";
+import React from "react";
+import {useNavigate, useParams} from "react-router-dom";
 
 export default function FacultyQuizController(){
     const navigate = useNavigate();
+    const{cid} = useParams();
     const handleNavigate =() =>{
-        //todo:这个后面要改就是你要获得课程的cid(courseid）替换6746a21c827a3fc0370a5691
-        //todo:然后获取课程下的qid替换editor，同时要在course下面主index把route换了
-        navigate("/Kanbas/Courses/6746a21c827a3fc0370a5691/Quizzes/editor");
+        navigate(`/Kanbas/Courses/${cid}/Quizzes/editor`);
     }
 
     return (

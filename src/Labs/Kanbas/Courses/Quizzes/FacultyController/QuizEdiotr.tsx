@@ -1,11 +1,15 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Quiz, quizInitialState} from "../quizType";
 import {FaRegCalendarAlt} from "react-icons/fa";
-import {Link} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
+import {getQuizById, updateQuiz} from "../client";
+import {findAssignmentById} from "../../Assignment/client";
 
 export default function QuizEditor() {
     //todo:获取qid,fetch数据，记得保留一份previousQuiz,点击取消的时候setQuiz (previousQuiz)
-    const [quiz, setQuiz] = useState<Quiz>(quizInitialState);//得到数据这个改成previousQuiz
+    const [quiz, setQuiz] = useState<Quiz >(quizInitialState);//得到数据这个改成previousQuiz
+    const {cid,qid} = useParams();
+    const navigate = useNavigate();
     //todo:记得用useeffect每次qid变化就更新数据
 
     const handleInputChange = (field: keyof Quiz, value: any) => {
@@ -19,16 +23,51 @@ export default function QuizEditor() {
         }));
     };
 
-    const updateQuiz = async () => {
-        // todo:补充好这个update，检查下数据传入正确吗
+    const handleNavtoQuizzes = () => {
+        navigate(`/Kanbas/Courses/${cid}/Quizzes`);
+    }
+    const handleUpdateQuiz = async () => {
         try {
-            console.log("Saving quiz:", quiz);
-            // Example: await api.update(quiz);
-            alert("Quiz saved successfully!");
+            console.log("Updating quiz:", quiz);
+
+            // 调用后端 API 更新数据
+            const response = updateQuiz(qid??"",quiz);
+
         } catch (error) {
-            console.error("Error saving quiz:", error);
+            console.error("Error updating quiz:", error);
+            alert("Error saving quiz. Please check console logs for more details.");
         }
     };
+
+    const handleUpdateQuizWithUpdate = async () => {
+        try {
+            const formattedQuiz = {
+                ...quiz,
+                published: true,
+            };
+
+            console.log("Updating quiz:", formattedQuiz);
+            const response = updateQuiz(quiz._id,formattedQuiz);
+
+        } catch (error) {
+            console.error("Error updating quiz:", error);
+            alert("Error saving quiz. Please check console logs for more details.");
+        }
+    };
+
+    useEffect(() => {
+        const loadQuiz = async () => {
+            if (qid) {
+                try {
+                    const quiz = await getQuizById(qid);
+                    setQuiz(quiz);
+                } catch (error) {
+                    console.error("Error fetching assignment:", error);
+                }
+            }
+        };
+        loadQuiz();
+    }, []);
 
     return (
         <div className="container mt-4">
@@ -286,74 +325,69 @@ export default function QuizEditor() {
                     </div>
                 </div>
             </div>
-            //todo:时间是string类型，记得改下表达
-            {/*/!* Assign 时间 *!/*/}
-            {/*<div className="row mb-3">*/}
-            {/*    <div className="col-4 text-sm-end">*/}
-            {/*        <h4>Assign</h4>*/}
-            {/*    </div>*/}
-            {/*    <div className="col-8">*/}
-            {/*        <div className="card">*/}
-            {/*            <div className="card-body">*/}
-            {/*                <label className="form-label"><strong>Due</strong></label>*/}
-            {/*                <div className="input-group mb-3">*/}
-            {/*                    <input*/}
-            {/*                        type="datetime-local"*/}
-            {/*                        className="form-control"*/}
-            {/*                        value={quiz.dueDate|| ""}*/}
-            {/*                        onChange={(e) =>*/}
-            {/*                            handleInputChange(*/}
-            {/*                                "dueDate",*/}
-            {/*                                new Date(e.target.value)*/}
-            {/*                            )*/}
-            {/*                        }*/}
-            {/*                    />*/}
-            {/*                    <span className="input-group-text">*/}
-            {/*                        <FaRegCalendarAlt/>*/}
-            {/*                    </span>*/}
-            {/*                </div>*/}
-            {/*                <label className="form-label"><strong>Available From</strong></label>*/}
-            {/*                <div className="input-group mb-3">*/}
-            {/*                    <input*/}
-            {/*                        type="datetime-local"*/}
-            {/*                        className="form-control"*/}
-            {/*                        value={*/}
-            {/*                            quiz.availableFrom|| ""*/}
-            {/*                        }*/}
-            {/*                        onChange={(e) =>*/}
-            {/*                            handleInputChange(*/}
-            {/*                                "availableFrom",*/}
-            {/*                                new Date(e.target.value)*/}
-            {/*                            )*/}
-            {/*                        }*/}
-            {/*                    />*/}
-            {/*                    <span className="input-group-text">*/}
-            {/*                        <FaRegCalendarAlt/>*/}
-            {/*                    </span>*/}
-            {/*                </div>*/}
-            {/*                <label className="form-label"><strong>Available Until</strong></label>*/}
-            {/*                <div className="input-group mb-3">*/}
-            {/*                    <input*/}
-            {/*                        type="datetime-local"*/}
-            {/*                        className="form-control"*/}
-            {/*                        value={*/}
-            {/*                            quiz.availableUntil|| ""*/}
-            {/*                        }*/}
-            {/*                        onChange={(e) =>*/}
-            {/*                            handleInputChange(*/}
-            {/*                                "availableUntil",*/}
-            {/*                                new Date(e.target.value)*/}
-            {/*                            )*/}
-            {/*                        }*/}
-            {/*                    />*/}
-            {/*                    <span className="input-group-text">*/}
-            {/*                        <FaRegCalendarAlt/>*/}
-            {/*                    </span>*/}
-            {/*                </div>*/}
-            {/*            </div>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
+            {/* Assign 时间 */}
+            <div className="row mb-3">
+                <div className="col-4 text-sm-end">
+                    <h4>Assign</h4>
+                </div>
+                <div className="col-8">
+                    <div className="card">
+                        <div className="card-body">
+                            <label className="form-label"><strong>Due</strong></label>
+                            <div className="input-group mb-3">
+                                <input
+                                    type="datetime-local"
+                                    className="form-control"
+                                    value={quiz.dueDate ? new Date(quiz.dueDate).toLocaleDateString() : "N/A"}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "dueDate",
+                                            new Date(e.target.value)
+                                        )
+                                    }
+                                />
+                                <span className="input-group-text">
+                                    <FaRegCalendarAlt/>
+                                </span>
+                            </div>
+                            <label className="form-label"><strong>Available From</strong></label>
+                            <div className="input-group mb-3">
+                                <input
+                                    type="datetime-local"
+                                    className="form-control"
+                                    value={quiz.availableFrom ? new Date(quiz.availableFrom).toLocaleDateString() : "N/A"}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "availableFrom",
+                                            new Date(e.target.value)
+                                        )
+                                    }
+                                />
+                                <span className="input-group-text">
+                                    <FaRegCalendarAlt/>
+                                </span>
+                            </div>
+                            <label className="form-label"><strong>Available Until</strong></label>
+                            <div className="input-group mb-3">
+                                <input
+                                    type="datetime-local"
+                                    className="form-control"
+                                    value={quiz.availableUntil ? new Date(quiz.availableUntil).toLocaleDateString() : "N/A"}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            "availableUntil",
+                                            new Date(e.target.value)
+                                        )
+                                    }
+                                />
+                                <span className="input-group-text">
+                                    <FaRegCalendarAlt/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Actions */}
             <hr/>
@@ -368,15 +402,18 @@ export default function QuizEditor() {
                     <button
                         className="btn btn-danger float-end me-3"
                         onClick={() => {
-                            handleInputChange("published", true);
-                            updateQuiz();
+                            handleUpdateQuizWithUpdate();
+                            handleNavtoQuizzes();
                         }}
                     >
                         Save & Publish
                     </button>
                     <button
                         className="btn btn-danger float-end me-3"
-                        onClick={updateQuiz}
+                        onClick={() => {
+                        handleUpdateQuiz();
+                        handleNavtoQuizzes();
+                    }}
                     >
                         Save
                     </button>
