@@ -15,13 +15,13 @@ export const createQuiz = async (courseId: string, quiz: any) => {
 
 // Retrieve a list of quizzes for a course
 export const getQuizzesByCourse = async (courseId: string) => {
-    const { data } = await axios.get(`${COURSES_API}/${courseId}/quizzes`);
+    const { data } = await axiosWithCredentials.get(`${COURSES_API}/${courseId}/quizzes`);
     return data;
 };
 
 // Retrieve details of a specific quiz
 export const getQuizById = async (quizId: string) => {
-    const { data } = await axios.get(`${QUIZZES_API}/${quizId}`);
+    const { data } = await axiosWithCredentials.get(`${QUIZZES_API}/${quizId}`);
     return data;
 };
 

@@ -34,7 +34,7 @@ export default function Quizzes() {
     const { currentUser } = useSelector((state: RootState) => state.accountReducer);
     const isFacultyOrAdmin = ["FACULTY", "ADMIN"].includes(currentUser.role.toUpperCase());
     const { cid } = useParams();
-    const dispatch = useDispatch() // added dispatch
+    const dispatch = useDispatch()                                  // added dispatch
 
     //设置获取quizzes的变化
     const [quizzes, setQuizzes] = useState<Quiz[]>([quizInitialState]);
@@ -176,6 +176,6 @@ export default function Quizzes() {
     );
 }
 
-function dispatch(arg0: { payload: string; type: "quizzes/deleteQuiz"; }) {
-    throw new Error("Function not implemented.");
-}
+// function dispatch(arg0: { payload: string; type: "quizzes/deleteQuiz"; }) {
+//     throw new Error("Function not implemented.");
+// }

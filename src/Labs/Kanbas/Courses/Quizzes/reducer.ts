@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Quiz } from "./quizType"; // Ensure this path is correct
+import { mockQuiz, Quiz, quizInitialState } from "./quizType"; 
 
 
 interface QuizzesState {
@@ -13,38 +13,41 @@ const initialState: QuizzesState = {
 const quizzesSlice = createSlice({
     name: "quizzes",
     initialState,
-    
+
     reducers: {
         // Action to add a quiz
-        addQuiz: (state, action: PayloadAction<Quiz>) => {
-            state.quizzes.push(action.payload);
+        addQuiz: (state: any, { payload: quiz }) => {
+            const newQuiz = quizInitialState; // 使用 quizInitialState 作为初始 quiz
+            state.quizzes = [ ...state.quizzes, newQuiz];
         },
 
         // Action to delete a quiz
-        deleteQuiz: (state, action: PayloadAction<string>) => {
-            state.quizzes = state.quizzes.filter(quiz => quiz._id !== action.payload);
+        deleteQuiz: (state: any, { payload: quizId }) => {
+            state.quizzes = state.quizzes.filter((q: any) => q._id !== quizId);
         },
 
         // Action to set quizzes (e.g., after fetching them)
-        setQuizzes: (state, action: PayloadAction<Quiz[]>) => {
+        setQuizzes: (state: any, action: any) => {
             state.quizzes = action.payload;
         },
 
         // Action to update a quiz (used for updating after publish toggle or any update)
-        updateQuiz: (state, action: PayloadAction<Quiz>) => {
-            const index = state.quizzes.findIndex(quiz => quiz._id === action.payload._id);
-            if (index !== -1) {
-                state.quizzes[index] = action.payload;
-            }
-        }
-    },
-    
+        updateQuiz: (state: any, { payload: quiz }) => {
+            state.quizzes = state.quizzes.map((q: any) =>
+                q._id === quiz._id ? quiz : q
+            ) as any;
+        },
 
-    //    deleteQuiz: (state, { payload: quizId }) => {
-    //    state.quizzes = state.quizzes.filter(quiz => quiz._id !== quizId);
+        // Action to edit a quiz
+        editQuiz: (state: any, { payload: quizId }) => {
+            state.quizzes = state.quizzes.map((q: any) =>
+                q._id === quizId ? { ...q, editing: true } : q
+            ) as any;
+        },
+    },
 
 });
 
-export const { addQuiz, deleteQuiz, setQuizzes } = quizzesSlice.actions;
+export const { addQuiz, deleteQuiz, setQuizzes, updateQuiz, editQuiz } = quizzesSlice.actions;
 export default quizzesSlice.reducer;
 
