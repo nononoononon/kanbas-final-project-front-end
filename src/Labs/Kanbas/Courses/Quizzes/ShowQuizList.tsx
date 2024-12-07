@@ -95,7 +95,7 @@ export default function Quizzes() {
         if (isFacultyOrAdmin) {
             return `/Kanbas/Courses/${cid}/Quizzes/${quizId}/review`;
         }else{
-            return `/Kanbas/Courses/${cid}/Quizzes/${quizId}`;
+            return `/Kanbas/Courses/${cid}/Quizzes/${quizId}/attempt`;
         }
     }
 
@@ -113,7 +113,7 @@ export default function Quizzes() {
             {/*添加课程用*/}
             <div id="wd-assignments" className="p-3">
                 {/*render if its admin or faculty*/}
-                {isFacultyOrAdmin && <FacultyQuizController />}
+                {isFacultyOrAdmin && <FacultyQuizController/>}
             </div>
 
 
@@ -130,44 +130,53 @@ export default function Quizzes() {
             </div>
 
             <ul id="wd-quizzes-list" className="list-group rounded-0">
-                {quizzes.map((quiz: Quiz) => (
-                    <li key={quiz._id} className="list-group-item p-3 d-flex align-items-center wd-lesson">
-                        <Link
-                            //nav to different screens based on role
-                             to={navToDifferentLink(cid ?? "6747e89997ff8ea63ab721ae", quiz._id)}
-                            className="w-100 d-flex align-items-center text-decoration-none"
-                        >
-                            <BsGripVertical className="fs-1 me-2 text-muted text-black"/>
-                            <BsBookHalf className="fs-1 me-3 text-success"/>
-                            <div className="w-100 d-flex flex-column">
-                                {/* Quiz Title */}
-                                <span className="fs-5 fw-bold text-black">{quiz.title}</span>
+                {quizzes
+                    .filter((quiz: Quiz) => isFacultyOrAdmin || quiz.published) // 非管理员/教师用户只显示已发布的测验
+                    .map((quiz: Quiz) => (
+                        <li key={quiz._id} className="list-group-item p-3 d-flex align-items-center wd-lesson">
+                            <Link
+                                // 导航到不同页面
+                                to={navToDifferentLink(cid ?? "6747e89997ff8ea63ab721ae", quiz._id)}
+                                className="w-100 d-flex align-items-center text-decoration-none"
+                            >
+                                <BsGripVertical className="fs-1 me-2 text-muted text-black"/>
+                                <BsBookHalf className="fs-1 me-3 text-success"/>
+                                <div className="w-100 d-flex flex-column">
+                                    {/* 测验标题 */}
+                                    <span className="fs-5 fw-bold text-black">{quiz.title}</span>
 
-                                {/* Availability Information */}
-                                <div className="text-muted">
-                                    <p>
-                                        <strong>Available
-                                            at:</strong> {quiz.availableFrom ? new Date(quiz.availableFrom).toLocaleDateString() : "N/A"} |
-                                        <strong> Not available
-                                            at:</strong> {quiz.availableUntil ? new Date(quiz.availableUntil).toLocaleDateString() : "N/A"}
-                                    </p>
-                                </div>
+                                    {/* 可用性信息 */}
+                                    <div className="text-muted">
+                                        <p>
+                                            <strong>Available at:</strong>{" "}
+                                            {quiz.availableFrom ? new Date(quiz.availableFrom).toLocaleDateString() : "N/A"} |{" "}
+                                            <strong>Not available at:</strong>{" "}
+                                            {quiz.availableUntil ? new Date(quiz.availableUntil).toLocaleDateString() : "N/A"}
+                                        </p>
+                                    </div>
 
-                                {/* Due Date and Points */}
-                                <div className="text-muted">
-                                    <p>
-                                        <strong>Due:</strong> {quiz.availableFrom ? new Date(quiz.availableFrom).toLocaleDateString() : "N/A"} | <strong>{quiz.points || 0} pt</strong>
-                                    </p>
+                                    {/* 截止日期和分数 */}
+                                    <div className="text-muted">
+                                        <p>
+                                            <strong>Due:</strong>{" "}
+                                            {quiz.availableFrom ? new Date(quiz.availableFrom).toLocaleDateString() : "N/A"} |{" "}
+                                            <strong>{quiz.points || 0} pt</strong>
+                                        </p>
+                                    </div>
                                 </div>
+                            </Link>
+                            <div className="text-muted ms-auto">
+                                {isFacultyOrAdmin && (
+                                    <QuizControlButtons
+                                        quiz={quiz}
+                                        deleteQuiz={() => handleDeleteQuizzes(quiz._id)}
+                                        editQuiz={() => handleNavToEditPage(quiz._id,cid ?? "6747e89997ff8ea63ab721ae")}
+                                        publishQuiz={() => handleTogglePublishQuiz(cid ?? "6747e89997ff8ea63ab721ae", quiz._id)}
+                                    />
+                                )}
                             </div>
-                        </Link>
-                        <div className="text-muted ms-auto">
-                            {/*你可以根据你传入参数不同来修改函数，我只是实现基础的*/}
-                            <QuizControlButtons quiz={quiz} deleteQuiz={() => handleDeleteQuizzes(quiz._id)} editQuiz={() => handleNavToEditPage(cid ?? "6747e89997ff8ea63ab721ae",quiz._id )}
-                                                publishQuiz={() => handleTogglePublishQuiz(cid ?? "6747e89997ff8ea63ab721ae",quiz._id )}/>
-                        </div>
-                    </li>
-                ))}
+                        </li>
+                    ))}
             </ul>
         </div>
     );

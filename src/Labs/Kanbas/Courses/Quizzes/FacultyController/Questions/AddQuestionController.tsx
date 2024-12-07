@@ -14,14 +14,14 @@ export default function AddQuestionController() {
 
     const [question, setQuestion] = useState(questionInitialState);
     const {qid} = useParams();
+
     const handleAddNewQuestion = () => {
         try{
             const formattedQuestion = {
                 ...question,
                 quizId: qid, // 正确的quizId
             };
-
-            const response = addQuestionToQuiz(qid??defaultQuizId,question);
+            const response = addQuestionToQuiz(qid??defaultQuizId,formattedQuestion);
 
         }catch (error){
             console.error("Error creating question:", error);
@@ -36,6 +36,7 @@ export default function AddQuestionController() {
             setQuestion(questionInitialState);
         }
     }, [isModalOpen]);
+
 
     return(
         <div id="wd-question-button" className="p-3">

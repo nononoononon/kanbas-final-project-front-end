@@ -107,6 +107,7 @@ export const startAttempt = async (quizId: string, studentId: string) => {
 
 // Submit answers for a quiz attempt (Students)
 export const submitAttempt = async (attemptId: string, answers: any) => {
+
     const { data } = await axiosWithCredentials.post(
         `${ATTEMPTS_API}/${attemptId}/submit`,
         { answers }

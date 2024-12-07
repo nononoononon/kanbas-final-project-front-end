@@ -1,10 +1,9 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
-import {Quiz, quizInitialState} from "../../quizType";
+import {Quiz} from "../../quizType";
 import AddQuestionController from "./AddQuestionController";
-import {defaultQuizId, Question, questionInitialState} from "../../questionType";
-import {getQuestionsForQuiz, getQuizById} from "../../client";
-import {IoEllipsisVertical} from "react-icons/io5";
+import {Question} from "../../questionType";
+import {deleteQuestion, getQuestionsForQuiz, getQuizById, updateQuiz} from "../../client";
 import {FaTrash} from "react-icons/fa";
 import {FaPencil} from "react-icons/fa6";
 
@@ -15,12 +14,13 @@ export default function QuestionEditorIndex() {
     const{cid, qid} = useParams();
 
     const [questions, setQuestions] = useState<Question[]>([]);
-
+    //todo:这个也要加reducer
     const fetchQuestions = async () => {
         try {
-            console.log("Fetching questions with ID:", qid);
+
             if(qid){
                 const fetchedQuestions =  await getQuestionsForQuiz(qid);
+                console.log(fetchedQuestions);
                 setQuestions(fetchedQuestions)
             }
 
@@ -28,6 +28,7 @@ export default function QuestionEditorIndex() {
             console.error("Error fetching quiz:", error);
         }
     };
+
     const loadQuiz = async () => {
         if (qid) {
             try {
@@ -38,21 +39,24 @@ export default function QuestionEditorIndex() {
             }
         }
     };
+    //todo:更新
 
-    const updateQuiz = async () => {
+    const handleUpdateQuiz = async () => {
         if (!quiz || !quiz._id) {
             console.error("Quiz data is invalid or missing _id");
             return;
         }
-
+        const totalPoints = questions.reduce((sum, question) => sum + (question.points || 0), 0);;
         // 准备要更新的数据
         const updatedData = {
+            ...quiz,
             questions: questions, // 只更新 questions 数组
+            points: totalPoints,
         };
 
         try {
-            console.log("updating quiz:", quiz);
-            // Example: await api.update(quiz);
+            console.log("updating quiz:", updatedData);
+            const response = updateQuiz(quiz._id,updatedData);
             alert("Quiz updated successfully!");
         } catch (error) {
             console.error("Error saving quiz:", error);
@@ -63,6 +67,27 @@ export default function QuestionEditorIndex() {
     const handleNavtoQuizzes = () => {
         navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/editor`);
     }
+
+    const handleDeleteQuizByID = async (questionId: string) => {
+        try {
+            // 显示确认提示
+            const userConfirmed = window.confirm("Are you sure you want to delete this quiz?");
+            if (!userConfirmed) {
+                return; // 用户取消删除操作
+            }
+
+            // 调用删除逻辑
+            await deleteQuestion(questionId);
+
+            setQuestions((prevQuestions) => prevQuestions.filter((q) => q._id !== questionId));
+
+            alert("Quiz deleted successfully!");
+        } catch (error) {
+            console.error("Error deleting quiz:", error);
+            alert("Failed to delete the quiz. Please try again.");
+        }
+    };
+
 
     useEffect(() => {
         if (cid && qid) {
@@ -120,7 +145,7 @@ export default function QuestionEditorIndex() {
                         <FaPencil className="text-secondary me-3 fs-5"/>
                         <FaTrash
                             className="text-danger me-3 fs-5"
-                            onClick={() => 0}
+                            onClick={() => handleDeleteQuizByID(question._id)}
                         />
                     </li>
                 ))}
@@ -134,7 +159,7 @@ export default function QuestionEditorIndex() {
                 <div className="col-12 text-center">
                     <button
                         className="btn btn-danger float-end me-3"
-                        onClick={updateQuiz}
+                        onClick={handleUpdateQuiz}
                     >
                         Save
                     </button>
