@@ -7,7 +7,8 @@ import {Link, Route, Routes, useNavigate, useParams} from "react-router-dom";
 import {Quiz, quizInitialState} from "./quizType";//这个里面定义了数据类型，需要查看看这里
 import {deleteQuiz, getQuizzesByCourse, togglePublishQuiz} from './client';
 import QuizControlButtons from "./FacultySideThreeDotsController/DotsController";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import { addQuiz, deleteQuiz as deleteQuizAction, setQuizzes as setQuizAction} from './reducer';
 
 
 interface User {
@@ -33,6 +34,7 @@ export default function Quizzes() {
     const { currentUser } = useSelector((state: RootState) => state.accountReducer);
     const isFacultyOrAdmin = ["FACULTY", "ADMIN"].includes(currentUser.role.toUpperCase());
     const { cid } = useParams();
+    const dispatch = useDispatch()                                  // added dispatch
 
     //设置获取quizzes的变化
     const [quizzes, setQuizzes] = useState<Quiz[]>([quizInitialState]);
@@ -43,6 +45,7 @@ export default function Quizzes() {
         try {
             const fetchedQuizzes = await getQuizzesByCourse(courseId);
             setQuizzes(fetchedQuizzes);
+            dispatch(setQuizAction(fetchedQuizzes));               // added dispatch 
         } catch (error) {
             console.error("Error fetching quizzes:", error);
         }
@@ -56,6 +59,7 @@ export default function Quizzes() {
                 console.log("Quiz deleted successfully");
                 // 从状态中移除已删除的 quiz
                 setQuizzes((prevQuizzes) => prevQuizzes.filter((quiz) => quiz._id !== quizId));
+                dispatch(deleteQuizAction(quizId));               // added dispatch
             }
         }catch (error){
             console.error("Error deleting quizzes:", error);
@@ -87,8 +91,7 @@ export default function Quizzes() {
         } catch (error) {
             console.error(`Error toggling publish status for quiz ${quizId}:`, error);
         }
-
-    }
+    };
 
     //传入user role,是教授导航到编辑，学生导航到考试
     function navToDifferentLink (cid: string, quizId: string):string{
@@ -106,7 +109,7 @@ export default function Quizzes() {
         }else {
             console.error("Course ID (cid) is missing or invalid");
         }
-    }, []);
+    }, [cid]);                 // Fetch quizzes on mount or when `cid` changes
 
     return (
         <div id="wd-quizzes">
@@ -181,3 +184,7 @@ export default function Quizzes() {
         </div>
     );
 }
+
+// function dispatch(arg0: { payload: string; type: "quizzes/deleteQuiz"; }) {
+//     throw new Error("Function not implemented.");
+// }

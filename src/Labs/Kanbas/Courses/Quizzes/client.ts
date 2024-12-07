@@ -1,5 +1,5 @@
 import axios from "axios";
-const REMOTE_SERVER = process.env.REACT_APP_REMOTE_SERVER;
+export const REMOTE_SERVER = "http://localhost:4000";
 const COURSES_API = `${REMOTE_SERVER}/api/courses`;
 const QUIZZES_API = `${REMOTE_SERVER}/api/quizzes`;
 const axiosWithCredentials = axios.create({ withCredentials: true });
@@ -15,13 +15,13 @@ export const createQuiz = async (courseId: string, quiz: any) => {
 
 // Retrieve a list of quizzes for a course
 export const getQuizzesByCourse = async (courseId: string) => {
-    const { data } = await axios.get(`${COURSES_API}/${courseId}/quizzes`);
+    const { data } = await axiosWithCredentials.get(`${COURSES_API}/${courseId}/quizzes`);
     return data;
 };
 
 // Retrieve details of a specific quiz
 export const getQuizById = async (quizId: string) => {
-    const { data } = await axios.get(`${QUIZZES_API}/${quizId}`);
+    const { data } = await axiosWithCredentials.get(`${QUIZZES_API}/${quizId}`);
     return data;
 };
 
