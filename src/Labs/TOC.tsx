@@ -9,9 +9,9 @@ export default function TOC() {
                 </a>
             </li>
             <li className="nav-item">
-                <a id="wd-github" href="https://github.com/nononoononon/kanbas-react-web-app-fa2024"
+                <a id="wd-github" href="https://github.com/nononoononon/kanbas-final-project-front-end"
                    className="nav-link">
-                    My GitHub for react
+                    GitHub for react
                 </a>
             </li>
             <li className="nav-item">
