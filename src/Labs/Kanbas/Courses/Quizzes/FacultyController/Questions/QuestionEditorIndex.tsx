@@ -6,14 +6,23 @@ import {Question} from "../../questionType";
 import {deleteQuestion, getQuestionsForQuiz, getQuizById, updateQuiz} from "../../client";
 import {FaTrash} from "react-icons/fa";
 import {FaPencil} from "react-icons/fa6";
+import {useDispatch, useSelector} from "react-redux";
+import {handleDeleteQuestion, setQuestions} from "./reducer";
+interface RootState {
+    questionReducer: {
+        questions: Question[];
+    };
+}
+
 
 export default function QuestionEditorIndex() {
-
+    const dispatch = useDispatch();
+    const questions = useSelector((state: RootState) => state.questionReducer.questions);
     const [quiz, setQuiz] = useState<Quiz>();//得到数据这个改成刚刚得到Quiz
     //获取对应的id
     const{cid, qid} = useParams();
 
-    const [questions, setQuestions] = useState<Question[]>([]);
+    //const [questions, setQuestions] = useState<Question[]>([]);
     //todo:这个也要加reducer
     const fetchQuestions = async () => {
         try {
@@ -21,7 +30,8 @@ export default function QuestionEditorIndex() {
             if(qid){
                 const fetchedQuestions =  await getQuestionsForQuiz(qid);
                 console.log(fetchedQuestions);
-                setQuestions(fetchedQuestions)
+                //setQuestions(fetchedQuestions)
+                dispatch(setQuestions(fetchedQuestions));
             }
 
         } catch (error) {
@@ -32,8 +42,8 @@ export default function QuestionEditorIndex() {
     const loadQuiz = async () => {
         if (qid) {
             try {
-                const quiz = await getQuizById(qid);
-                setQuiz(quiz);
+                const fetchedQuiz = await getQuizById(qid);
+                setQuiz(fetchedQuiz);
             } catch (error) {
                 console.error("Error fetching assignment:", error);
             }
@@ -79,7 +89,7 @@ export default function QuestionEditorIndex() {
             // 调用删除逻辑
             await deleteQuestion(questionId);
 
-            setQuestions((prevQuestions) => prevQuestions.filter((q) => q._id !== questionId));
+            dispatch(handleDeleteQuestion(questionId));
 
             alert("Quiz deleted successfully!");
         } catch (error) {

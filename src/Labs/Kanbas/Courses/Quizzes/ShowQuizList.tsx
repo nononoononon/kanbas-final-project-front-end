@@ -7,8 +7,8 @@ import {Link, Route, Routes, useNavigate, useParams} from "react-router-dom";
 import {Quiz, quizInitialState} from "./quizType";//这个里面定义了数据类型，需要查看看这里
 import {deleteQuiz, getQuizzesByCourse, togglePublishQuiz} from './client';
 import QuizControlButtons from "./FacultySideThreeDotsController/DotsController";
-import {useSelector} from "react-redux";
-
+import {useDispatch, useSelector} from "react-redux";
+import { deleteQuiz as deleteQuizRedux } from "./reducer";
 
 interface User {
     _id: string;
@@ -48,15 +48,14 @@ export default function Quizzes() {
         }
     };
 
+    const dispatch = useDispatch();
     const handleDeleteQuizzes = async ( quizId: string) => {
-        console.log("delete quizId:  " + quizId)
         try{
             const response = await deleteQuiz(quizId);
-            if (response.status === 204) {
                 console.log("Quiz deleted successfully");
-                // 从状态中移除已删除的 quiz
                 setQuizzes((prevQuizzes) => prevQuizzes.filter((quiz) => quiz._id !== quizId));
-            }
+                // 更新 Redux 状态
+                dispatch(deleteQuizRedux(quizId));
         }catch (error){
             console.error("Error deleting quizzes:", error);
         }
