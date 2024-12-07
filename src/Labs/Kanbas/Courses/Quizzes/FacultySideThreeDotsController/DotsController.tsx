@@ -7,6 +7,7 @@ export default function QuizControlButtons({
                                                deleteQuiz,
                                                editQuiz,
                                                publishQuiz,
+                                               sortQuizzes,
                                            }: {
     quiz: {
         _id: string;
@@ -15,6 +16,7 @@ export default function QuizControlButtons({
     deleteQuiz: (quizId: string) => void;
     editQuiz: (quizId: string) => void;
     publishQuiz: (quizId: string, publish: boolean) => void;
+    sortQuizzes: (quizId: string) => void;
 }) {
     const [menuVisible, setMenuVisible] = useState(false);
 
@@ -67,6 +69,15 @@ export default function QuizControlButtons({
                         }}
                     >
                         {quiz.published ? "Unpublish" : "Publish"}
+                    </button>
+                    <button
+                        className="btn btn-link text-start w-100 text-decoration-none text-dark"
+                        onClick={() => {
+                            sortQuizzes(quiz._id);
+                            setMenuVisible(false);
+                        }}
+                    >
+                        Sort
                     </button>
                 </div>
             )}

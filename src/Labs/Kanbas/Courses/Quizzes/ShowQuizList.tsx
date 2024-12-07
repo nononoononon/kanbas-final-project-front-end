@@ -33,7 +33,7 @@ export default function Quizzes() {
     const { currentUser } = useSelector((state: RootState) => state.accountReducer);
     const isFacultyOrAdmin = ["FACULTY", "ADMIN"].includes(currentUser.role.toUpperCase());
     const { cid } = useParams();
-
+    const [sortOrder, setSortOrder] = useState('asc');
     //设置获取quizzes的变化
     const [quizzes, setQuizzes] = useState<Quiz[]>([quizInitialState]);
 
@@ -60,6 +60,17 @@ export default function Quizzes() {
             console.error("Error deleting quizzes:", error);
         }
     }
+
+    const handleSortQuizzes = async () => {
+        const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        setSortOrder(newSortOrder); // 更新排序方向
+        try {
+            const sortedQuizzes = await getQuizzesByCourse(cid!, `title_${newSortOrder}`);
+            setQuizzes(sortedQuizzes);
+        } catch (error) {
+            console.error("Error fetching sorted quizzes:", error);
+        }
+    };
 
     //nav to edit page
     const navigate = useNavigate();
@@ -171,6 +182,7 @@ export default function Quizzes() {
                                         deleteQuiz={() => handleDeleteQuizzes(quiz._id)}
                                         editQuiz={() => handleNavToEditPage(quiz._id,cid ?? "6747e89997ff8ea63ab721ae")}
                                         publishQuiz={() => handleTogglePublishQuiz(cid ?? "6747e89997ff8ea63ab721ae", quiz._id)}
+                                        sortQuizzes={() => handleSortQuizzes()}
                                     />
                                 )}
                             </div>
