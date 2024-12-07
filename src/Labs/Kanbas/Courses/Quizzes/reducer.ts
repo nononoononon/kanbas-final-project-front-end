@@ -3,12 +3,14 @@ import { Quiz, quizInitialState } from "./quizType";
 
 interface QuizzesState {
     quizzes: Quiz[];
+    currentQuiz: Quiz | null;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: QuizzesState = {
     quizzes: [],
+    currentQuiz: null,
     loading: false,
     error: null,
 };
@@ -17,6 +19,9 @@ const quizzesSlice = createSlice({
     name: "quizzes",
     initialState,
     reducers: {
+        setCurrentQuiz: (state, action: PayloadAction<Quiz>) => {
+            state.currentQuiz = action.payload;
+        },
 
         deleteQuiz: (state, { payload: quizId }: PayloadAction<string>) => {
             state.quizzes = state.quizzes.filter((q) => q._id !== quizId);
@@ -51,6 +56,7 @@ export const {
     startLoading,
     finishLoading,
     setError,
+    setCurrentQuiz
 } = quizzesSlice.actions;
 
 export default quizzesSlice.reducer;

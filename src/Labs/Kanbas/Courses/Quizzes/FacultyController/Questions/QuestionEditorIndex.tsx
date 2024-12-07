@@ -8,6 +8,7 @@ import {FaTrash} from "react-icons/fa";
 import {FaPencil} from "react-icons/fa6";
 import {useDispatch, useSelector} from "react-redux";
 import {handleDeleteQuestion, setQuestions} from "./reducer";
+import {setCurrentQuiz} from "../../reducer";
 interface RootState {
     questionReducer: {
         questions: Question[];
@@ -43,13 +44,14 @@ export default function QuestionEditorIndex() {
         if (qid) {
             try {
                 const fetchedQuiz = await getQuizById(qid);
+                dispatch(setCurrentQuiz(fetchedQuiz));
                 setQuiz(fetchedQuiz);
             } catch (error) {
                 console.error("Error fetching assignment:", error);
             }
         }
     };
-    //todo:更新
+
 
     const handleUpdateQuiz = async () => {
         if (!quiz || !quiz._id) {
@@ -66,8 +68,9 @@ export default function QuestionEditorIndex() {
 
         try {
             console.log("updating quiz:", updatedData);
-            const response = updateQuiz(quiz._id,updatedData);
+            const response = await updateQuiz(quiz._id,updatedData);
             alert("Quiz updated successfully!");
+            setQuiz(response);
         } catch (error) {
             console.error("Error saving quiz:", error);
         }
@@ -78,20 +81,19 @@ export default function QuestionEditorIndex() {
         navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/editor`);
     }
 
-    const handleDeleteQuizByID = async (questionId: string) => {
+    const handleDeleteQuestionByID = async (questionId: string) => {
         try {
             // 显示确认提示
-            const userConfirmed = window.confirm("Are you sure you want to delete this quiz?");
-            if (!userConfirmed) {
-                return; // 用户取消删除操作
-            }
+            // const userConfirmed = window.confirm("Are you sure you want to delete this quiz?");
+            // if (!userConfirmed) {
+            //     return; // 用户取消删除操作
+            // }
 
             // 调用删除逻辑
             await deleteQuestion(questionId);
 
             dispatch(handleDeleteQuestion(questionId));
 
-            alert("Quiz deleted successfully!");
         } catch (error) {
             console.error("Error deleting quiz:", error);
             alert("Failed to delete the quiz. Please try again.");
@@ -109,7 +111,6 @@ export default function QuestionEditorIndex() {
     return (
         <div className="container mt-4">
 
-            {/*todo:这个数据用reducer来更新,不然更新不了，或者你试试*/}
             <h5 className="text-end ">points : {quiz?.points ?? "N/A"}</h5>
             {/* Tabs */}
             <div className="tabs">
@@ -155,7 +156,7 @@ export default function QuestionEditorIndex() {
                         <FaPencil className="text-secondary me-3 fs-5"/>
                         <FaTrash
                             className="text-danger me-3 fs-5"
-                            onClick={() => handleDeleteQuizByID(question._id)}
+                            onClick={() => handleDeleteQuestionByID(question._id)}
                         />
                     </li>
                 ))}

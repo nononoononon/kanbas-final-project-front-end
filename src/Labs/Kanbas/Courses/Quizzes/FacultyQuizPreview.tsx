@@ -75,6 +75,12 @@ export default function FacultyQuizPreview() {
         navigate(`/Kanbas/Courses/${cid}/Quizzes`); // 动态导航到该课程的 Quizzes 页面
     }
 
+    const handleNavtoEditQuizzes =()=>{
+        setAttempt(undefined)
+        setScore(0)
+        navigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/editor`); // 动态导航到该课程的 Quizzes 页面
+    }
+
 
     return (
 
@@ -83,7 +89,7 @@ export default function FacultyQuizPreview() {
                 <>
                     <h2>{quiz.title}</h2>
                     <p>
-                        Attempt {attempt.attemptNumber }/{quiz.settings.attemptsAllowed}
+                        Attempt {attempt.attemptNumber}/{quiz.settings.attemptsAllowed}
                     </p>
                     {attempt.answers.map((answer) => {
                         const question = typeof answer.questionId === "string" ? null : (answer.questionId as Question);
@@ -133,6 +139,13 @@ export default function FacultyQuizPreview() {
                     >
                         Submit Quiz
                     </button>
+                    <button
+                        className="btn me-3 btn-secondary text-end"
+                        onClick={handleNavtoEditQuizzes}
+                    >
+                        Edit Quiz
+                    </button>
+
                     <hr/>
                     <h3 className="text-center">{score !== null && <p>Your Score: {score} / {quiz.points}</p>}</h3>
                 </>
