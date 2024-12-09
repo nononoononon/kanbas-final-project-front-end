@@ -13,6 +13,8 @@ export default function StudentQuiz() {
     const [attempt, setAttempt] = useState<Attempt>();//这个可以是null
     const [score, setScore] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [answerFeedback, setAnswerFeedback] = useState<{ [key: string]: boolean } | null>(null);
+
     useEffect(() => {
         const fetchQuizData = async () => {
             try {
@@ -53,17 +55,25 @@ export default function StudentQuiz() {
         });
     };
 
-    //注意这个是交了后的数据，别和fetch的弄混了
+    //注意这个是交了后的数据
     const submitQuiz = async () => {
         if (!quiz || !attempt) return;
         if (isSubmitting) return; // 防止多次触发
         setIsSubmitting(true);
-        console.log("Submitting answers:", attempt.answers);
+        //console.log("Submitting answers:", attempt.answers);
         if (qid && attemptId) {
             try {
                 const submittedAttempt = await submitAttempt(attemptId, attempt.answers);
-                console.log("传回来的是:", submittedAttempt.answers);
+                //console.log("传回来的是:", submittedAttempt.answers);
                 setScore(submittedAttempt.score);
+
+                // 更新答案对错信息
+                const feedback: { [key: string]: boolean } = {};
+                submittedAttempt.answers.forEach((answer: any) => {
+                    const questionId = typeof answer.questionId === 'string' ? answer.questionId : answer.questionId._id;
+                    feedback[questionId] = answer.isCorrect;
+                });
+                setAnswerFeedback(feedback);
             } catch (error) {
                 console.error("Error submitting quiz:", error);
             }
@@ -96,7 +106,16 @@ export default function StudentQuiz() {
                         return (
                             <div key={question?._id ?? (answer.questionId as string)} className="mb-3">
                                 {/* Render the Question */}
-                                <h5>{question?.questionText ?? "Question not available"}</h5>
+                                <h5>{question?.questionText ?? "Question not available"}
+
+                                    {answerFeedback && answerFeedback[question?._id ?? (answer.questionId as string)] !== undefined && (
+                                        answerFeedback[question?._id ?? (answer.questionId as string)] ? (
+                                            <span className="ms-2 text-success">✔</span> // 对号
+                                        ) : (
+                                            <span className="ms-2 text-danger">✖</span> // 错号
+                                        )
+                                    )}
+                                </h5>
 
                                 {/* Render Multiple Choice or True/False options */}
                                 {question?.type === "Multiple Choice" || question?.type === "True/False" ? (

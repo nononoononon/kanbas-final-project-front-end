@@ -14,7 +14,7 @@ export default function Labs() {
             <h2>Team Members: </h2>
             <h3>Yuang Li </h3>
             <h3>Jiazuo Zhang </h3>
-            <h3>Jingyyi Huang </h3>
+            <h3>Jingyi Huang </h3>
             <h3>Jieyi Zhou </h3>
         </div>
     );

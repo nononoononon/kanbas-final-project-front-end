@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {getAttemptById, getQuizById, startAttempt} from "../client";
+import {getAttemptById, getAttemptsByQuizAndStudent, getQuizById, startAttempt} from "../client";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Quiz } from "../quizType";
+import {Attempt} from "./attemptType";
 
 interface User {
     _id: string;
@@ -31,7 +32,35 @@ export default function ConfirmTakeQuizPage() {
     const [error, setError] = useState<string | null>(null);
 
     const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+
     const studentId = currentUser._id;
+
+    const [latestScore, setLatestScore] = useState<string>("N/A");     //增加latestScore, setLatestScore
+
+    // 加载最近一次测验分数
+    const loadLatestScore = async () => {
+        if (qid && studentId) {
+            try {
+                const attempts = await getAttemptsByQuizAndStudent(qid, studentId);
+                if (attempts.length > 0) {
+                    // 从最后一个attempt开始向前查找
+                    const latestValidAttempt = attempts.reverse().find((attempt: any) => attempt.score != null);
+                    if (latestValidAttempt) {
+                        setLatestScore(latestValidAttempt.score);
+                    } else {
+                        // 如果没有任何attempt有分数
+                        setLatestScore("N/A");
+                    }
+                } else {
+                    // 如果没有任何记录
+                    setLatestScore("No attempts yet");
+                }
+            } catch (error) {
+                console.error("Error fetching attempts:", error);
+                setLatestScore("Error loading score");
+            }
+        }
+    };
 
     // 加载 Quiz 信息
     const loadQuiz = async () => {
@@ -52,6 +81,7 @@ export default function ConfirmTakeQuizPage() {
     useEffect(() => {
         if (qid) {
             loadQuiz();
+            loadLatestScore();
         }
     }, [qid]);
 
@@ -72,7 +102,7 @@ export default function ConfirmTakeQuizPage() {
     };
 
     const handleBackToQuizzes = () => {
-        navigate(`/Kanbas/Courses/Quizzes`);
+        navigate(`/Kanbas/Courses/${cid}/Quizzes`);
     };
 
     return (
@@ -101,6 +131,8 @@ export default function ConfirmTakeQuizPage() {
                             Start Quiz
                         </button>
                     </div>
+                    <br/>
+                    <h4 className="text-center">Your latest score: {latestScore} </h4>
                 </>
             )}
         </div>
